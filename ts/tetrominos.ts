@@ -25,14 +25,16 @@ export const colorDictionary: { [key: number]: string } = {
     5: S_ShapeColor,
     6: Z_ShapeColor,
     7: T_ShapeColor,
-    9: "#FFFFFF",
+    8: "#999999", // Shadow
+    9: "#FFFFFF", // Player
 };
 
 export const I_ShapeMatrix = [
-    [0, 0, 0, 0],
-    [1, 1, 1, 1],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 1, 1, 1, 1],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0],
 ];
 
 export const J_ShapeMatrix = [
@@ -48,8 +50,9 @@ export const L_ShapeMatrix = [
 ];
 
 export const O_ShapeMatrix = [
-    [1, 1],
-    [1, 1],
+    [0, 1, 1],
+    [0, 1, 1],
+    [0, 0, 0],
 ];
 
 export const S_ShapeMatrix = [
