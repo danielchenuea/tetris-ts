@@ -1,8 +1,49 @@
 import * as tetromino from "./tetrominos.js";
 import * as wallkicks from "./rotation.js";
+import { Position, Tetromino } from "../types/tetromino.type.js";
 
 var board: Array<Array<number>> = [
     // 10x40
+    // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    // [1, 1, 1, 0, 0, 0, 0, 0, 0, 1],
+    // [1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
+    // [0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
+    // [0, 0, 0, 0, 1, 1, 0, 1, 1, 0],
+    // [0, 0, 0, 0, 0, 1, 0, 1, 1, 0],
+    // [0, 0, 0, 0, 0, 0, 1, 1, 1, 0],
+    // [0, 1, 1, 1, 0, 0, 0, 1, 1, 0],
+    // [1, 1, 0, 0, 0, 0, 1, 1, 1, 1],
+    // [1, 1, 1, 1, 0, 0, 1, 1, 1, 1],
+    // [1, 1, 1, 1, 1, 0, 1, 1, 1, 1],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -23,8 +64,6 @@ var board: Array<Array<number>> = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [2, 3, 4, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 9, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -38,14 +77,16 @@ var board: Array<Array<number>> = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 1, 1, 0, 0, 0, 0],
+    [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ];
 const canvas = document.getElementById("tetrisgame") as HTMLCanvasElement;
-const gameCanvas = canvas.getContext("2d")!;
+const gameCanvas = canvas != null ? canvas.getContext("2d")! : null;
 
 const boxHeight = 800;
 const boxWidth = 400;
@@ -75,14 +116,13 @@ function nextLoop(): void {
     console.log(board);
 }
 
-function renderBoard(): void {
-    console.log(1);
+export function renderBoard(board: number[][], drawBoard = true): void {
     for (let i = 0; i < gameHeight + paddingY; i++) {
         for (let j = 0; j < gameWidth; j++) {
             if (board[i][j] === 9 || board[i][j] === 8) {
                 board[i][j] = 0;
             }
-            if (i > 19) {
+            if (i > 19 && drawBoard && gameCanvas) {
                 gameCanvas.fillStyle = tetromino.colorDictionary[board[i][j]];
                 gameCanvas.fillRect(
                     j * blockWidth,
@@ -94,10 +134,10 @@ function renderBoard(): void {
         }
     }
 
-    if (currentTetromino) {
+    if (currentTetromino && drawBoard && gameCanvas) {
         let [x, y] = [currentTetromino.x, currentTetromino.y];
 
-        let shadowPosition: Position = createShadow(currentTetromino);
+        let shadowPosition: Position = createShadow(board, currentTetromino);
         [shadowTetromino.x, shadowTetromino.y] = [
             shadowPosition.x,
             shadowPosition.y,
@@ -106,9 +146,9 @@ function renderBoard(): void {
         currentTetromino.matrix.forEach((row, indexColumn) => {
             row.forEach((el, indexRow) => {
                 if (el == 1) {
-                    const middleMargin = Math.floor(
+                    const middleMargin = Math.ceil(
                         currentTetromino.matrix.length / 2
-                    );
+                    ) - 1;
 
                     let yPos = y - middleMargin + indexColumn;
                     let xPos = x - middleMargin + indexRow;
@@ -139,23 +179,6 @@ function renderBoard(): void {
     }
 }
 
-// 0 -> 0
-// R -> 1
-// 2 -> 2
-// L -> 3
-interface Domino {
-    name: string;
-    matrix: Array<Array<number>>;
-    colorMatrix: string;
-    rotation: number;
-}
-interface Position {
-    x: number;
-    y: number;
-}
-
-type Tetromino = Domino & Position;
-
 const tetrominoBag: string[] = ["I", "J", "L", "O", "S", "Z", "T"];
 var currentTetrominoBag: string[] = [];
 
@@ -164,7 +187,7 @@ var currentTetromino: Tetromino = {
     matrix: tetromino["I_ShapeMatrix"],
     colorMatrix: tetromino["I_ShapeColor"],
     x: 4,
-    y: 20,
+    y: 24,
     rotation: 0
 };
 var shadowTetromino: Tetromino = {
@@ -172,35 +195,33 @@ var shadowTetromino: Tetromino = {
     matrix: tetromino["I_ShapeMatrix"],
     colorMatrix: tetromino["I_ShapeColor"],
     x: 4,
-    y: 20,
+    y: 24,
     rotation: 0
 };
 
-function movePiece(move: "up" | "right" | "down" | "left"): void {
+function movePiece(board: number[][], move: "up" | "right" | "down" | "left"): void {
     switch (move) {
         case "up":
-            if (haveCollision(currentTetromino, 0, -1)) break;
+            if (haveCollision(board, currentTetromino.matrix, currentTetromino.x, currentTetromino.y, 0, -1)) break;
             currentTetromino.y -= 1;
             break;
         case "right":
-            if (haveCollision(currentTetromino, 1, 0)) break;
+            if (haveCollision(board, currentTetromino.matrix, currentTetromino.x, currentTetromino.y, 1, 0)) break;
             currentTetromino.x += 1;
             break;
         case "down":
-            if (haveCollision(currentTetromino, 0, 1)) break;
+            if (haveCollision(board, currentTetromino.matrix, currentTetromino.x, currentTetromino.y, 0, 1)) break;
             currentTetromino.y += 1;
             break;
         case "left":
-            if (haveCollision(currentTetromino, -1, 0)) break;
+            if (haveCollision(board, currentTetromino.matrix, currentTetromino.x, currentTetromino.y, -1, 0)) break;
             currentTetromino.x -= 1;
             break;
     }
-    renderBoard();
 }
 
-function rotateMatrixClock(matrix: Array<Array<number>>): void {
-    // let M = matrix.slice();
-    let M = JSON.parse(JSON.stringify(matrix))
+export function rotateMatrixClock(board: number[][], tetromino: Tetromino): void {
+    let M = JSON.parse(JSON.stringify(tetromino.matrix))
     let n = M.length;
     let depth = Math.floor(n / 2);
     for (let i = 0; i < depth; i++) {
@@ -214,21 +235,20 @@ function rotateMatrixClock(matrix: Array<Array<number>>): void {
             M[i + j][opp] = temp;
         }
     }
-    let tempPiece = JSON.parse(JSON.stringify(currentTetromino));
-    tempPiece.matrix = M;
 
-    let colision = haveCollision(tempPiece, 0, 0);
-    console.log(colision)
-    if (!colision) {
-        currentTetromino.matrix = M;
-        currentTetromino.rotation = (currentTetromino.rotation + 1) % 4
-        renderBoard();
+    let rotation = checkIfCanRotate(board, tetromino, M, mod(tetromino.rotation + 1, 4));
+
+    if (rotation !== null) {
+        tetromino.matrix = M;
+        tetromino.x += rotation[0]
+        tetromino.y += rotation[1]
+        tetromino.rotation = mod(tetromino.rotation + 1, 4)
+        console.log(board)
     };
-    console.log(currentTetromino.rotation)
 }
 // M[i][i + j] -> M[opp - j][i] -> M[opp][opp - j] -> M[i + j][opp] ->
-function rotateMatrixAntiClock(matrix: Array<Array<number>>): void {
-    let M = matrix;
+export function rotateMatrixAntiClock(board: number[][], tetromino: Tetromino): void {
+    let M = JSON.parse(JSON.stringify(tetromino.matrix));
     let n = M.length;
     let depth = Math.floor(n / 2);
     for (let i = 0; i < depth; i++) {
@@ -243,30 +263,48 @@ function rotateMatrixAntiClock(matrix: Array<Array<number>>): void {
         }
     }
 
-    checkIfCanRotate(currentTetromino, M, board, currentTetromino.rotation, (currentTetromino.rotation - 1) % 4);
+    let rotation = checkIfCanRotate(board, tetromino, M, mod(tetromino.rotation - 1, 4));
 
-    currentTetromino.matrix = M;
-    currentTetromino.rotation = (currentTetromino.rotation - 1) % 4
-    renderBoard();
+    if (rotation !== null){
+        tetromino.matrix = M;
+        tetromino.x += rotation[0]
+        tetromino.y += rotation[1]
+        tetromino.rotation = mod(tetromino.rotation - 1, 4)
+    }
 }
 
-function checkIfCanRotate(tetris_piece: Tetromino, rotatedMatrix: Array<Array<number>>, board: Array<Array<number>>, currentRotation: number, newRotation: number) : boolean{
-    if (tetris_piece.name === "J" || 
-        tetris_piece.name === "L" || 
-        tetris_piece.name === "S" || 
-        tetris_piece.name === "Z" || 
-        tetris_piece.name === "T"){
-            let rotationString = currentRotation.toString() + newRotation.toString();
-            let rulenumber = wallkicks.wallkickDictionary[rotationString];
-            let ruleset = wallkicks.wallkicks_JLSTZ[rulenumber];
-            for (let i = 0; i < ruleset.length; i++) {
-                const element = ruleset[i];
-                rotatedMatrix
-            }
+function mod(n: number, m: number) {
+    return ((n % m) + m) % m;
+}
+
+function checkIfCanRotate(board: number[][], tetris_piece: Tetromino, rotatedMatrix: Array<Array<number>>, newRotation: number) : number[] | null {
+    let rotationString = tetris_piece.rotation.toString() + newRotation.toString();
+    let rulenumber = wallkicks.wallkickDictionary[rotationString];
+    let ruleset: number[][];
+    switch(tetris_piece.name){
+        case "J":
+        case "L":
+        case "S":
+        case "Z":
+        case "T":
+            ruleset = wallkicks.wallkicks_JLSTZ[rulenumber];
+            break;
+        case "I":
+            ruleset = wallkicks.wallkicks_I[rulenumber];
+            break;
+        default:
+            return null;
     }
 
-
-    return false;
+    for (let i = 0; i < ruleset.length; i++) {
+        const rule = ruleset[i];
+        const [currentX, currentY] = [tetris_piece.x, tetris_piece.y]
+        let collision = haveCollision(board, rotatedMatrix, currentX, currentY, rule[0], rule[1] * -1)
+        if (!collision){
+            return [rule[0], rule[1] * -1]
+        }
+    }
+    return null;
 }
 
 type TetrominoType = "I" | "J" | "L" | "O" | "S" | "Z" | "T";
@@ -281,7 +319,6 @@ function changeTetromino(): void {
     currentTetromino.name = newTetromino;
     currentTetromino.matrix = tetromino[`${newTetromino}_ShapeMatrix`];
     currentTetromino.colorMatrix = tetromino[`${newTetromino}_ShapeColor`];
-    renderBoard();
 }
 
 function DropPiece(): void {
@@ -289,43 +326,46 @@ function DropPiece(): void {
         shadowTetromino.x,
         shadowTetromino.y,
     ];
-    renderBoard();
 }
 
-function createShadow(currentTetromino: Tetromino): Position {
-    return recursiveFindBottom(currentTetromino, 0, 1);
+function createShadow(board: number[][], currentTetromino: Tetromino): Position {
+    return recursiveFindBottom(board, currentTetromino, 0, 1);
 }
 function recursiveFindBottom(
+    board: number[][],
     currentTetromino: Tetromino,
     x: number,
     y: number
 ): Position {
-    if (haveCollision(currentTetromino, x, y)) {
+    if (haveCollision(board, currentTetromino.matrix, currentTetromino.x, currentTetromino.y, x, y)) {
         return { x: currentTetromino.x + x, y: currentTetromino.y + y - 1 };
     }
-    return recursiveFindBottom(currentTetromino, x, y + 1);
+    return recursiveFindBottom(board, currentTetromino, x, y + 1);
 }
 
 function haveCollision(
-    tetromino: Tetromino,
+    board: number[][],
+    matrix: number[][],
+    currentX: number,
+    currentY: number,
     moveX: number,
     moveY: number
 ): boolean {
     for (
         let indexColumn = 0;
-        indexColumn < tetromino.matrix.length;
+        indexColumn < matrix.length;
         indexColumn++
     ) {
         for (
             let indexRow = 0;
-            indexRow < tetromino.matrix[indexColumn].length;
+            indexRow < matrix[indexColumn].length;
             indexRow++
         ) {
-            const middleMargin = Math.floor(tetromino.matrix.length / 2);
-            const el = tetromino.matrix[indexColumn][indexRow];
+            const middleMargin = Math.ceil(matrix.length / 2) - 1;
+            const el = matrix[indexColumn][indexRow];
             if (el === 1) {
-                let yPos = tetromino.y - middleMargin + indexColumn;
-                let xPos = tetromino.x - middleMargin + indexRow;
+                let yPos = currentY - middleMargin + indexColumn;
+                let xPos = currentX - middleMargin + indexRow;
                 if (yPos + moveY < 16 || yPos + moveY > 39) return true;
                 if (xPos + moveX < 0 || xPos + moveX > 9) return true;
                 let newPosition = board[yPos + moveY][xPos + moveX];
@@ -347,39 +387,42 @@ function haveCollision(
 document.addEventListener("keydown", (e: KeyboardEvent) => {
     switch (e.key) {
         case "z":
-            renderBoard();
             break;
         case "x":
             DropPiece();
             break;
         case "a":
-            rotateMatrixAntiClock(currentTetromino.matrix);
+            rotateMatrixAntiClock(board, currentTetromino);
             break;
         case "s":
-            rotateMatrixClock(currentTetromino.matrix);
+            rotateMatrixClock(board, currentTetromino);
             break;
         case "d":
             changeTetromino();
             break;
         case "c":
+            console.log(board);
+            break;
+        case "v":
             console.log(currentTetromino);
             break;
         case " ":
             nextLoop();
             break;
         case "ArrowUp":
-            movePiece("up");
+            movePiece(board, "up");
             break;
         case "ArrowLeft":
-            movePiece("left");
+            movePiece(board, "left");
             break;
         case "ArrowRight":
-            movePiece("right");
+            movePiece(board, "right");
             break;
         case "ArrowDown":
-            movePiece("down");
+            movePiece(board, "down");
             break;
         default:
             break;
     }
+    renderBoard(board);
 });

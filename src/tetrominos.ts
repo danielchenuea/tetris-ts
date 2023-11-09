@@ -30,11 +30,10 @@ export const colorDictionary: { [key: number]: string } = {
 };
 
 export const I_ShapeMatrix = [
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
-    [0, 1, 1, 1, 1],
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [1, 1, 1, 1],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
 ];
 
 export const J_ShapeMatrix = [
