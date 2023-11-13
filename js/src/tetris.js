@@ -1,4 +1,4 @@
-import * as tetromino from "./tetrominos.js";
+import * as tetrimino from "./tetriminos.js";
 import * as wallkicks from "./rotation.js";
 var board = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -21,31 +21,37 @@ var board = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-    [0, 1, 1, 1, 0, 0, 0, 1, 1, 0],
-    [0, 1, 0, 0, 0, 0, 0, 1, 0, 0],
-    [0, 1, 1, 0, 0, 0, 0, 1, 1, 0],
-    [1, 1, 1, 0, 0, 0, 0, 1, 0, 0],
-    [1, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    [1, 0, 0, 0, 0, 0, 0, 1, 1, 1],
-    [0, 1, 1, 0, 0, 0, 0, 1, 0, 0],
-    [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 1, 1, 0, 0, 0, 0, 1, 1, 1],
-    [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 1, 1, 0, 0, 0, 0, 0, 0, 0],
-    [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 1, 0, 0, 0, 0, 0, 0, 0, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 1, 1, 0, 0, 0, 0, 0, 0, 1],
     [1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
+    [0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
+    [0, 0, 0, 0, 1, 1, 0, 1, 1, 0],
+    [0, 0, 0, 0, 0, 1, 0, 1, 1, 0],
+    [0, 0, 0, 0, 0, 0, 1, 1, 1, 0],
+    [0, 1, 1, 1, 0, 0, 0, 1, 1, 0],
+    [1, 1, 0, 0, 0, 0, 1, 1, 1, 1],
+    [1, 1, 1, 1, 0, 0, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 0, 1, 1, 1, 1],
 ];
 const canvas = document.getElementById("tetrisgame");
+const canvasNext = document.getElementById("tetrisnext");
+const canvasBag = document.getElementById("tetrisbag");
 const gameCanvas = canvas != null ? canvas.getContext("2d") : null;
+const nextCanvas = canvasBag != null ? canvasNext.getContext("2d") : null;
+const bagCanvas = canvasBag != null ? canvasBag.getContext("2d") : null;
 const boxHeight = 800;
 const boxWidth = 400;
+const bagHeight = 200;
+const bagWidth = 200;
 const gameHeight = 20;
 const gameWidth = 10;
 const paddingY = 20;
@@ -68,22 +74,22 @@ export function renderBoard(board, drawBoard = true) {
                 board[i][j] = 0;
             }
             if (i > 19 && drawBoard && gameCanvas) {
-                gameCanvas.fillStyle = tetromino.colorDictionary[board[i][j]];
+                gameCanvas.fillStyle = tetrimino.colorDictionary[board[i][j]];
                 gameCanvas.fillRect(j * blockWidth, (i - paddingY) * blockHeight, blockWidth - 1, blockHeight - 1);
             }
         }
     }
-    if (currentTetromino && drawBoard && gameCanvas) {
-        let [x, y] = [currentTetromino.x, currentTetromino.y];
-        let shadowPosition = createShadow(board, currentTetromino);
-        [shadowTetromino.x, shadowTetromino.y] = [
+    if (currentTetrimino && drawBoard && gameCanvas) {
+        let [x, y] = [currentTetrimino.x, currentTetrimino.y];
+        let shadowPosition = createShadow(board, currentTetrimino);
+        [shadowTetrimino.x, shadowTetrimino.y] = [
             shadowPosition.x,
             shadowPosition.y,
         ];
-        currentTetromino.matrix.forEach((row, indexColumn) => {
+        currentTetrimino.matrix.forEach((row, indexColumn) => {
             row.forEach((el, indexRow) => {
                 if (el == 1) {
-                    const middleMargin = Math.ceil(currentTetromino.matrix.length / 2) - 1;
+                    const middleMargin = Math.ceil(currentTetrimino.matrix.length / 2) - 1;
                     let yPos = y - middleMargin + indexColumn;
                     let xPos = x - middleMargin + indexRow;
                     let yShadowPos = shadowPosition.y - middleMargin + indexColumn;
@@ -92,59 +98,63 @@ export function renderBoard(board, drawBoard = true) {
                         return;
                     board[yPos][xPos] = 9;
                     board[yShadowPos][xShadowPos] = 8;
-                    gameCanvas.fillStyle = tetromino.colorDictionary[8];
+                    gameCanvas.fillStyle = tetrimino.colorDictionary[8];
                     gameCanvas.fillRect(xShadowPos * blockWidth, (yShadowPos - paddingY) * blockHeight, blockWidth - 1, blockHeight - 1);
-                    gameCanvas.fillStyle = tetromino.colorDictionary[9];
+                    gameCanvas.fillStyle = currentTetrimino.colorMatrix;
                     gameCanvas.fillRect(xPos * blockWidth, (yPos - paddingY) * blockHeight, blockWidth - 1, blockHeight - 1);
                 }
             });
         });
     }
 }
-const tetrominoBag = ["I", "J", "L", "O", "S", "Z", "T"];
-var currentTetrominoBag = [];
-var currentTetromino = {
+const defaultTetriminoBag = ["I", "J", "L", "O", "S", "Z", "T"];
+var currentTetriminoBag = [];
+var currentTetrimino = {
     name: "I",
-    matrix: tetromino["I_ShapeMatrix"],
-    colorMatrix: tetromino["I_ShapeColor"],
+    matrix: tetrimino["I_ShapeMatrix"],
+    colorMatrix: tetrimino["I_ShapeColor"],
     x: 4,
     y: 24,
     rotation: 0
 };
-var shadowTetromino = {
+var shadowTetrimino = {
     name: "I",
-    matrix: tetromino["I_ShapeMatrix"],
-    colorMatrix: tetromino["I_ShapeColor"],
+    matrix: tetrimino["I_ShapeMatrix"],
+    colorMatrix: tetrimino["I_ShapeColor"],
     x: 4,
     y: 24,
     rotation: 0
 };
-function movePiece(board, move) {
+var holdTetrimino = null;
+export function movePiece(board, tetris_piece, move) {
     switch (move) {
         case "up":
-            if (haveCollision(board, currentTetromino.matrix, currentTetromino.x, currentTetromino.y, 0, -1))
+            if (haveCollision(board, tetris_piece.matrix, tetris_piece.x, tetris_piece.y, 0, -1))
                 break;
-            currentTetromino.y -= 1;
+            tetris_piece.y -= 1;
             break;
         case "right":
-            if (haveCollision(board, currentTetromino.matrix, currentTetromino.x, currentTetromino.y, 1, 0))
+            if (haveCollision(board, tetris_piece.matrix, tetris_piece.x, tetris_piece.y, 1, 0))
                 break;
-            currentTetromino.x += 1;
+            tetris_piece.x += 1;
             break;
         case "down":
-            if (haveCollision(board, currentTetromino.matrix, currentTetromino.x, currentTetromino.y, 0, 1))
-                break;
-            currentTetromino.y += 1;
+            if (haveCollision(board, tetris_piece.matrix, tetris_piece.x, tetris_piece.y, 0, 1)) {
+                SetPiece(board, currentTetrimino);
+                changeTetrimino(currentTetrimino);
+            }
+            ;
+            tetris_piece.y += 1;
             break;
         case "left":
-            if (haveCollision(board, currentTetromino.matrix, currentTetromino.x, currentTetromino.y, -1, 0))
+            if (haveCollision(board, tetris_piece.matrix, tetris_piece.x, tetris_piece.y, -1, 0))
                 break;
-            currentTetromino.x -= 1;
+            tetris_piece.x -= 1;
             break;
     }
 }
-export function rotateMatrixClock(board, tetromino) {
-    let M = JSON.parse(JSON.stringify(tetromino.matrix));
+export function rotateMatrixClock(board, tetris_piece) {
+    let M = JSON.parse(JSON.stringify(tetris_piece.matrix));
     let n = M.length;
     let depth = Math.floor(n / 2);
     for (let i = 0; i < depth; i++) {
@@ -158,18 +168,17 @@ export function rotateMatrixClock(board, tetromino) {
             M[i + j][opp] = temp;
         }
     }
-    let rotation = checkIfCanRotate(board, tetromino, M, mod(tetromino.rotation + 1, 4));
+    let rotation = checkIfCanRotate(board, tetris_piece, M, mod(tetris_piece.rotation + 1, 4));
     if (rotation !== null) {
-        tetromino.matrix = M;
-        tetromino.x += rotation[0];
-        tetromino.y += rotation[1];
-        tetromino.rotation = mod(tetromino.rotation + 1, 4);
-        console.log(board);
+        tetris_piece.matrix = M;
+        tetris_piece.x += rotation[0];
+        tetris_piece.y += rotation[1];
+        tetris_piece.rotation = mod(tetris_piece.rotation + 1, 4);
     }
     ;
 }
-export function rotateMatrixAntiClock(board, tetromino) {
-    let M = JSON.parse(JSON.stringify(tetromino.matrix));
+export function rotateMatrixAntiClock(board, tetris_piece) {
+    let M = JSON.parse(JSON.stringify(tetris_piece.matrix));
     let n = M.length;
     let depth = Math.floor(n / 2);
     for (let i = 0; i < depth; i++) {
@@ -183,12 +192,12 @@ export function rotateMatrixAntiClock(board, tetromino) {
             M[opp - j][i] = temp;
         }
     }
-    let rotation = checkIfCanRotate(board, tetromino, M, mod(tetromino.rotation - 1, 4));
+    let rotation = checkIfCanRotate(board, tetris_piece, M, mod(tetris_piece.rotation - 1, 4));
     if (rotation !== null) {
-        tetromino.matrix = M;
-        tetromino.x += rotation[0];
-        tetromino.y += rotation[1];
-        tetromino.rotation = mod(tetromino.rotation - 1, 4);
+        tetris_piece.matrix = M;
+        tetris_piece.x += rotation[0];
+        tetris_piece.y += rotation[1];
+        tetris_piece.rotation = mod(tetris_piece.rotation - 1, 4);
     }
 }
 function mod(n, m) {
@@ -222,31 +231,93 @@ function checkIfCanRotate(board, tetris_piece, rotatedMatrix, newRotation) {
     }
     return null;
 }
-function changeTetromino() {
-    if (currentTetrominoBag.length === 0) {
-        currentTetrominoBag = tetrominoBag
+function changeTetrimino(tetris_piece) {
+    if (currentTetriminoBag.length === 0) {
+        currentTetriminoBag = defaultTetriminoBag
             .slice()
             .sort(() => Math.random() - 0.5);
     }
-    let newTetromino = currentTetrominoBag.pop();
-    currentTetromino.name = newTetromino;
-    currentTetromino.matrix = tetromino[`${newTetromino}_ShapeMatrix`];
-    currentTetromino.colorMatrix = tetromino[`${newTetromino}_ShapeColor`];
+    let currentTetriminoName = currentTetriminoBag.pop();
+    tetris_piece.name = currentTetriminoName;
+    tetris_piece.matrix = tetrimino[`${currentTetriminoName}_ShapeMatrix`];
+    tetris_piece.colorMatrix = tetrimino[`${currentTetriminoName}_ShapeColor`];
+    tetris_piece.rotation = 0;
+    tetris_piece.x = 4;
+    tetris_piece.y = 22;
+    if (currentTetriminoBag.length === 0) {
+        currentTetriminoBag = defaultTetriminoBag
+            .slice()
+            .sort(() => Math.random() - 0.5);
+    }
+    let nextTetriminoName = currentTetriminoBag[currentTetriminoBag.length - 1];
+    let nextTetrimino = {
+        name: nextTetriminoName,
+        matrix: tetrimino[`${nextTetriminoName}_ShapeMatrix`],
+        colorMatrix: tetrimino[`${nextTetriminoName}_ShapeColor`],
+        rotation: 0,
+        x: 4,
+        y: 22
+    };
+    if (nextCanvas)
+        drawTetriminoCanvasInfo(nextCanvas, nextTetrimino);
 }
-function DropPiece() {
-    [currentTetromino.x, currentTetromino.y] = [
-        shadowTetromino.x,
-        shadowTetromino.y,
+function drawTetriminoCanvasInfo(canvas, nextTetrimino) {
+    canvas.clearRect(0, 0, 200, 200);
+    let xOffset = (bagWidth - (nextTetrimino.matrix.length * blockWidth)) / 2;
+    let yOffset = (bagHeight - (nextTetrimino.matrix.length * blockHeight)) / 2;
+    nextTetrimino.matrix.forEach((row, indexColumn) => {
+        row.forEach((el, indexRow) => {
+            if (el == 1) {
+                let yPos = indexColumn;
+                let xPos = indexRow;
+                canvas.fillStyle = nextTetrimino.colorMatrix;
+                canvas.fillRect(xOffset + (xPos * blockWidth), yOffset + (yPos * blockHeight), blockWidth - 1, blockHeight - 1);
+            }
+        });
+    });
+}
+function holdPiece(tetris_piece) {
+    let temp_hold = holdTetrimino;
+    holdTetrimino = tetris_piece;
+    if (temp_hold) {
+        tetris_piece.name = temp_hold.name;
+        tetris_piece.matrix = temp_hold.matrix;
+        tetris_piece.colorMatrix = temp_hold.colorMatrix;
+        tetris_piece.rotation = 0;
+        tetris_piece.x = 4;
+        tetris_piece.y = 22;
+    }
+    if (bagCanvas)
+        drawTetriminoCanvasInfo(bagCanvas, holdTetrimino);
+}
+function SetPiece(board, tetris_piece) {
+    tetris_piece.matrix.forEach((row, indexColumn) => {
+        row.forEach((el, indexRow) => {
+            if (el == 1) {
+                const middleMargin = Math.ceil(currentTetrimino.matrix.length / 2) - 1;
+                let yPos = tetris_piece.y - middleMargin + indexColumn;
+                let xPos = tetris_piece.x - middleMargin + indexRow;
+                if (xPos < 0 || yPos < 0)
+                    return;
+                board[yPos][xPos] = tetrimino.tetriminoDictionary[tetris_piece.name];
+            }
+        });
+    });
+}
+function DropPiece(tetris_piece, tetris_shadow) {
+    [tetris_piece.x, tetris_piece.y] = [
+        tetris_shadow.x,
+        tetris_shadow.y,
     ];
 }
-function createShadow(board, currentTetromino) {
-    return recursiveFindBottom(board, currentTetromino, 0, 1);
+function createShadow(board, tetris_piece) {
+    return recursiveFindBottom(board, tetris_piece, 0, 1);
 }
-function recursiveFindBottom(board, currentTetromino, x, y) {
-    if (haveCollision(board, currentTetromino.matrix, currentTetromino.x, currentTetromino.y, x, y)) {
-        return { x: currentTetromino.x + x, y: currentTetromino.y + y - 1 };
+function recursiveFindBottom(board, tetris_piece, x, y) {
+    if (haveCollision(board, tetris_piece.matrix, tetris_piece.x, tetris_piece.y, x, y)) {
+        return { x: tetris_piece.x + x, y: tetris_piece.y + y - 1 };
     }
-    return recursiveFindBottom(board, currentTetromino, x, y + 1);
+    return recursiveFindBottom(board, tetris_piece, x, y + 1);
 }
 function haveCollision(board, matrix, currentX, currentY, moveX, moveY) {
     for (let indexColumn = 0; indexColumn < matrix.length; indexColumn++) {
@@ -276,37 +347,42 @@ document.addEventListener("keydown", (e) => {
         case "z":
             break;
         case "x":
-            DropPiece();
+            DropPiece(currentTetrimino, shadowTetrimino);
+            SetPiece(board, currentTetrimino);
+            changeTetrimino(currentTetrimino);
             break;
         case "a":
-            rotateMatrixAntiClock(board, currentTetromino);
+            rotateMatrixAntiClock(board, currentTetrimino);
             break;
         case "s":
-            rotateMatrixClock(board, currentTetromino);
-            break;
-        case "d":
-            changeTetromino();
+            rotateMatrixClock(board, currentTetrimino);
             break;
         case "c":
             console.log(board);
             break;
+        case "d":
+            changeTetrimino(currentTetrimino);
+            break;
         case "v":
-            console.log(currentTetromino);
+            console.log(currentTetriminoBag);
+            break;
+        case "q":
+            holdPiece(currentTetrimino);
             break;
         case " ":
             nextLoop();
             break;
         case "ArrowUp":
-            movePiece(board, "up");
+            movePiece(board, currentTetrimino, "up");
             break;
         case "ArrowLeft":
-            movePiece(board, "left");
+            movePiece(board, currentTetrimino, "left");
             break;
         case "ArrowRight":
-            movePiece(board, "right");
+            movePiece(board, currentTetrimino, "right");
             break;
         case "ArrowDown":
-            movePiece(board, "down");
+            movePiece(board, currentTetrimino, "down");
             break;
         default:
             break;

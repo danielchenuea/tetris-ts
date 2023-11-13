@@ -205,4 +205,32 @@ describe('J_Block(Rotation2 -> Rotation3)', () => {
     expect(TetrominoPiece.y).toBe(37);
     expect(TetrominoPiece.rotation).toBe(3);
   });
+
+  test('Obstructed - Fail Test', () => {
+    let obstruction_board = [      
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 1, 1, 1, 0, 0, 0],
+      [0, 0, 0, 8, 8, 8, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 8, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 1, 1, 1, 1, 0, 0, 0, 0],
+      [0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
+    ];
+    swapTestBoard(board, obstruction_board);
+    TetrominoPiece = {
+      name: "J",
+      matrix: Matrix_J_2,
+      colorMatrix: tetrominoDefinition["J_ShapeColor"],
+      x: 4,
+      y: 35,
+      rotation: 2
+    }
+    rotateMatrixClock(board, TetrominoPiece);
+    expect(TetrominoPiece.x).toBe(4);
+    expect(TetrominoPiece.y).toBe(35);
+    expect(TetrominoPiece.rotation).toBe(2);
+  });
 });

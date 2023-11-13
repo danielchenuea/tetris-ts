@@ -13,4 +13,4 @@ export interface Position {
     y: number;
 }
 
-export type Tetromino = Domino & Position;
+export type Tetrimino = Domino & Position;

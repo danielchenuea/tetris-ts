@@ -16,6 +16,16 @@ export const T_ShapeColor = "#FF00FF";
 // const Z_ShapeColor = "#666666";
 // const T_ShapeColor = "#777777";
 
+export const tetriminoDictionary: { [key: string]: number } = {
+    "I": 1,
+    "J": 2,
+    "L": 3,
+    "O": 4,
+    "S": 5,
+    "Z": 6,
+    "T": 7
+};
+
 export const colorDictionary: { [key: number]: string } = {
     0: NothingColor,
     1: I_ShapeColor,

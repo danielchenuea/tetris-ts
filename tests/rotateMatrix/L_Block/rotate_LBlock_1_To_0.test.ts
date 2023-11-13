@@ -206,7 +206,7 @@ describe('L_Block(Rotation1 -> Rotation0)', () => {
     expect(TetrominoPiece.rotation).toBe(0);
   });
 
-  test('Obstructed - Fail Test 5', () => {
+  test('Obstructed - Fail Test', () => {
     let obstruction_board = [
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],

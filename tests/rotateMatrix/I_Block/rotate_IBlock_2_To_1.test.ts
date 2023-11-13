@@ -63,7 +63,7 @@ afterEach(() => {
 })
 
 function swapTestBoard(board_ : number[][], obstruction_board_ : number[][]) : void{
-  board_.splice(20, obstruction_board_.length, ...obstruction_board_)
+  board_.splice(30, obstruction_board_.length, ...obstruction_board_)
 }
 
 describe('I_Block(Rotation2 -> Rotation1)', () => {
@@ -75,17 +75,7 @@ describe('I_Block(Rotation2 -> Rotation1)', () => {
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 8, 8, 8, 8, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -96,12 +86,12 @@ describe('I_Block(Rotation2 -> Rotation1)', () => {
       matrix: Matrix_I_2,
       colorMatrix: tetrominoDefinition["I_ShapeColor"],
       x: 4,
-      y: 36,
+      y: 35,
       rotation: 2
     }
     rotateMatrixAntiClock(board, TetrominoPiece);
     expect(TetrominoPiece.x).toBe(4);
-    expect(TetrominoPiece.y).toBe(36);
+    expect(TetrominoPiece.y).toBe(35);
     expect(TetrominoPiece.rotation).toBe(1);
   });
 
@@ -113,17 +103,7 @@ describe('I_Block(Rotation2 -> Rotation1)', () => {
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 8, 8, 8, 8, 0, 0, 0],
       [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 1, 1, 0, 0, 0],
@@ -151,17 +131,7 @@ describe('I_Block(Rotation2 -> Rotation1)', () => {
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 8, 8, 8, 8, 0, 0, 0],
       [0, 0, 0, 1, 0, 1, 0, 0, 0, 0],
       [0, 0, 0, 1, 0, 1, 0, 0, 0, 0],
       [0, 0, 1, 1, 0, 1, 1, 0, 0, 0],
@@ -189,17 +159,7 @@ describe('I_Block(Rotation2 -> Rotation1)', () => {
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 8, 8, 8, 8, 0, 0, 0],
       [0, 0, 0, 1, 0, 1, 1, 0, 0, 0],
       [0, 0, 0, 1, 0, 1, 0, 0, 0, 0],
       [0, 0, 1, 1, 1, 1, 1, 0, 0, 0],
@@ -219,63 +179,15 @@ describe('I_Block(Rotation2 -> Rotation1)', () => {
     expect(TetrominoPiece.rotation).toBe(1);
   });
 
-  test('Obstructed - Fail Test 4', () => {
+  test('Obstructed - Pass Test 3 v2', () => {
     let obstruction_board = [
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [1, 1, 1, 1, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 1, 0, 1, 1, 0, 0, 0],
-      [0, 0, 0, 1, 0, 1, 0, 0, 0, 0],
-      [0, 0, 1, 1, 1, 1, 1, 0, 0, 0],
-    ];
-    swapTestBoard(board, obstruction_board);
-    TetrominoPiece = {
-      name: "I",
-      matrix: Matrix_I_2,
-      colorMatrix: tetrominoDefinition["I_ShapeColor"],
-      x: 4,
-      y: 35,
-      rotation: 2
-    }
-    rotateMatrixAntiClock(board, TetrominoPiece);
-    expect(TetrominoPiece.x).toBe(4);
-    expect(TetrominoPiece.y).toBe(35);
-    expect(TetrominoPiece.rotation).toBe(2);
-  });
-
-  test('Obstructed - Pass Test 3. v2', () => {
-    let obstruction_board = [
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [1, 1, 1, 1, 1, 1, 0, 0, 0, 0],
       [0, 0, 1, 1, 0, 1, 0, 0, 0, 0],
       [0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 1, 8, 8, 8, 8, 0, 0, 0],
       [0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -295,132 +207,8 @@ describe('I_Block(Rotation2 -> Rotation1)', () => {
     expect(TetrominoPiece.rotation).toBe(1);
   });
 
-  test('Obstructed - Pass Test 5', () => {
+  test('Obstructed - Pass Test 4 v2', () => {
     let obstruction_board = [
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [1, 1, 1, 1, 1, 1, 1, 0, 0, 0],
-      [0, 0, 1, 1, 0, 1, 1, 0, 0, 0],
-      [0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    ];
-    swapTestBoard(board, obstruction_board);
-    TetrominoPiece = {
-      name: "I",
-      matrix: Matrix_I_2,
-      colorMatrix: tetrominoDefinition["I_ShapeColor"],
-      x: 4,
-      y: 35,
-      rotation: 2
-    }
-    rotateMatrixAntiClock(board, TetrominoPiece);
-    expect(TetrominoPiece.x).toBe(5);
-    expect(TetrominoPiece.y).toBe(36);
-    expect(TetrominoPiece.rotation).toBe(1);
-  });
-
-  test('Obstructed - Fail Test 5', () => {
-    let obstruction_board = [
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [1, 1, 1, 1, 1, 1, 1, 0, 0, 0],
-      [0, 1, 1, 1, 1, 1, 1, 0, 0, 0],
-      [0, 1, 1, 0, 0, 0, 1, 0, 0, 0],
-      [0, 1, 1, 0, 0, 0, 0, 0, 0, 0],
-      [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    ];
-    swapTestBoard(board, obstruction_board);
-    TetrominoPiece = {
-      name: "I",
-      matrix: Matrix_I_2,
-      colorMatrix: tetrominoDefinition["I_ShapeColor"],
-      x: 4,
-      y: 35,
-      rotation: 2
-    }
-    rotateMatrixAntiClock(board, TetrominoPiece);
-    expect(TetrominoPiece.x).toBe(4);
-    expect(TetrominoPiece.y).toBe(35);
-    expect(TetrominoPiece.rotation).toBe(2);
-  });
-
-  test('Obstructed - Fail Test 5 v2', () => {
-    let obstruction_board = [
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [1, 1, 1, 1, 1, 1, 0, 0, 0, 0],
-      [0, 1, 1, 1, 1, 1, 0, 0, 0, 0],
-      [0, 1, 1, 0, 0, 0, 0, 0, 0, 0],
-      [0, 1, 1, 8, 8, 8, 8, 0, 0, 0],
-      [0, 1, 1, 1, 1, 1, 1, 0, 0, 0],
-      [0, 1, 1, 0, 0, 0, 0, 1, 1, 0],
-      [0, 1, 1, 1, 0, 0, 0, 1, 0, 0],
-    ];
-    swapTestBoard(board, obstruction_board);
-    TetrominoPiece = {
-      name: "I",
-      matrix: Matrix_I_2,
-      colorMatrix: tetrominoDefinition["I_ShapeColor"],
-      x: 4,
-      y: 35,
-      rotation: 2
-    }
-    rotateMatrixAntiClock(board, TetrominoPiece);
-    expect(TetrominoPiece.x).toBe(4);
-    expect(TetrominoPiece.y).toBe(35);
-    expect(TetrominoPiece.rotation).toBe(2);
-  });
-
-  test('Obstructed - Pass Test 4', () => {
-    let obstruction_board = [
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -445,5 +233,89 @@ describe('I_Block(Rotation2 -> Rotation1)', () => {
     expect(TetrominoPiece.x).toBe(2);
     expect(TetrominoPiece.y).toBe(34);
     expect(TetrominoPiece.rotation).toBe(1);
+  });
+  
+  test('Obstructed - Pass Test 5', () => {
+    let obstruction_board = [
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [1, 1, 1, 1, 1, 1, 1, 0, 0, 0],
+      [0, 0, 1, 1, 0, 1, 1, 0, 0, 0],
+      [0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 1, 8, 8, 8, 8, 0, 0, 0],
+      [0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ];
+    swapTestBoard(board, obstruction_board);
+    TetrominoPiece = {
+      name: "I",
+      matrix: Matrix_I_2,
+      colorMatrix: tetrominoDefinition["I_ShapeColor"],
+      x: 4,
+      y: 35,
+      rotation: 2
+    }
+    rotateMatrixAntiClock(board, TetrominoPiece);
+    expect(TetrominoPiece.x).toBe(5);
+    expect(TetrominoPiece.y).toBe(36);
+    expect(TetrominoPiece.rotation).toBe(1);
+  });
+
+  test('Obstructed - Fail Test', () => {
+    let obstruction_board = [
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [1, 1, 1, 1, 1, 1, 1, 0, 0, 0],
+      [0, 1, 1, 1, 1, 1, 1, 0, 0, 0],
+      [0, 1, 1, 0, 0, 0, 1, 0, 0, 0],
+      [0, 1, 1, 8, 8, 8, 8, 0, 0, 0],
+      [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+    ];
+    swapTestBoard(board, obstruction_board);
+    TetrominoPiece = {
+      name: "I",
+      matrix: Matrix_I_2,
+      colorMatrix: tetrominoDefinition["I_ShapeColor"],
+      x: 4,
+      y: 35,
+      rotation: 2
+    }
+    rotateMatrixAntiClock(board, TetrominoPiece);
+    expect(TetrominoPiece.x).toBe(4);
+    expect(TetrominoPiece.y).toBe(35);
+    expect(TetrominoPiece.rotation).toBe(2);
+  });
+
+  test('Obstructed - Fail Test v2', () => {
+    let obstruction_board = [
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [1, 1, 1, 1, 1, 1, 0, 0, 0, 0],
+      [0, 1, 1, 1, 1, 1, 0, 0, 0, 0],
+      [0, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+      [0, 1, 1, 8, 8, 8, 8, 0, 0, 0],
+      [0, 1, 1, 1, 1, 1, 1, 0, 0, 0],
+      [0, 1, 1, 0, 0, 0, 0, 1, 1, 0],
+      [0, 1, 1, 1, 0, 0, 0, 1, 0, 0],
+    ];
+    swapTestBoard(board, obstruction_board);
+    TetrominoPiece = {
+      name: "I",
+      matrix: Matrix_I_2,
+      colorMatrix: tetrominoDefinition["I_ShapeColor"],
+      x: 4,
+      y: 35,
+      rotation: 2
+    }
+    rotateMatrixAntiClock(board, TetrominoPiece);
+    expect(TetrominoPiece.x).toBe(4);
+    expect(TetrominoPiece.y).toBe(35);
+    expect(TetrominoPiece.rotation).toBe(2);
   });
 });

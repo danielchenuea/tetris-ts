@@ -5,7 +5,7 @@ import * as tetrominoDefinition from "../../../src/tetrominos";
 
 let board : number[][];
 let TetrominoPiece : Tetromino;
-let Matrix_J_0 : number[][];
+let Matrix_J_1 : number[][];
 
 beforeEach(() => {
     board = [
@@ -50,7 +50,7 @@ beforeEach(() => {
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
-    Matrix_J_0 = [
+    Matrix_J_1 = [
       [0, 1, 1],
       [0, 1, 0],
       [0, 1, 0]
@@ -82,7 +82,7 @@ describe('J_Block(Rotation1 -> Rotation0)', () => {
     swapTestBoard(board, obstruction_board);
     TetrominoPiece = {
       name: "J",
-      matrix: Matrix_J_0,
+      matrix: Matrix_J_1,
       colorMatrix: tetrominoDefinition["J_ShapeColor"],
       x: 4,
       y: 35,
@@ -100,7 +100,7 @@ describe('J_Block(Rotation1 -> Rotation0)', () => {
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 8, 8, 0, 0, 0, 0],
+      [0, 1, 1, 1, 8, 8, 0, 0, 0, 0],
       [0, 1, 1, 1, 8, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 8, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -110,35 +110,7 @@ describe('J_Block(Rotation1 -> Rotation0)', () => {
     swapTestBoard(board, obstruction_board);
     TetrominoPiece = {
       name: "J",
-      matrix: Matrix_J_0,
-      colorMatrix: tetrominoDefinition["J_ShapeColor"],
-      x: 4,
-      y: 35,
-      rotation: 1
-    }
-    rotateMatrixAntiClock(board, TetrominoPiece);
-    expect(TetrominoPiece.x).toBe(5);
-    expect(TetrominoPiece.y).toBe(35);
-    expect(TetrominoPiece.rotation).toBe(0);
-  });
-
-  test('Obstructed - Pass Test 2 v2', () => {
-    let obstruction_board = [
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 1, 1, 1, 8, 8, 0, 0, 0, 0],
-      [0, 0, 0, 0, 8, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 8, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    ];
-    swapTestBoard(board, obstruction_board);
-    TetrominoPiece = {
-      name: "J",
-      matrix: Matrix_J_0,
+      matrix: Matrix_J_1,
       colorMatrix: tetrominoDefinition["J_ShapeColor"],
       x: 4,
       y: 35,
@@ -157,7 +129,7 @@ describe('J_Block(Rotation1 -> Rotation0)', () => {
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 8, 8, 0, 0, 0, 0],
-      [0, 0, 0, 0, 8, 1, 1, 1, 0, 0],
+      [0, 1, 1, 1, 8, 1, 1, 1, 0, 0],
       [0, 0, 0, 0, 8, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -166,35 +138,7 @@ describe('J_Block(Rotation1 -> Rotation0)', () => {
     swapTestBoard(board, obstruction_board);
     TetrominoPiece = {
       name: "J",
-      matrix: Matrix_J_0,
-      colorMatrix: tetrominoDefinition["J_ShapeColor"],
-      x: 4,
-      y: 35,
-      rotation: 1
-    }
-    rotateMatrixAntiClock(board, TetrominoPiece);
-    expect(TetrominoPiece.x).toBe(5);
-    expect(TetrominoPiece.y).toBe(36);
-    expect(TetrominoPiece.rotation).toBe(0);
-  });
-
-  test('Obstructed - Pass Test 3 v2', () => {
-    let obstruction_board = [
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 8, 8, 0, 0, 0, 0],
-      [0, 1, 1, 1, 8, 0, 1, 1, 1, 0],
-      [0, 0, 0, 0, 8, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    ];
-    swapTestBoard(board, obstruction_board);
-    TetrominoPiece = {
-      name: "J",
-      matrix: Matrix_J_0,
+      matrix: Matrix_J_1,
       colorMatrix: tetrominoDefinition["J_ShapeColor"],
       x: 4,
       y: 35,
@@ -222,7 +166,7 @@ describe('J_Block(Rotation1 -> Rotation0)', () => {
     swapTestBoard(board, obstruction_board);
     TetrominoPiece = {
       name: "J",
-      matrix: Matrix_J_0,
+      matrix: Matrix_J_1,
       colorMatrix: tetrominoDefinition["J_ShapeColor"],
       x: 4,
       y: 35,
@@ -232,34 +176,6 @@ describe('J_Block(Rotation1 -> Rotation0)', () => {
     expect(TetrominoPiece.x).toBe(4);
     expect(TetrominoPiece.y).toBe(33);
     expect(TetrominoPiece.rotation).toBe(0);
-  });
-
-  test('Obstructed - Fail Test 4', () => {
-    let obstruction_board = [
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 1, 1, 0, 0, 0],
-      [0, 0, 0, 0, 8, 8, 1, 0, 0, 0],
-      [0, 0, 0, 0, 8, 1, 1, 0, 0, 0],
-      [0, 0, 0, 0, 8, 1, 1, 0, 0, 0],
-      [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-    ];
-    swapTestBoard(board, obstruction_board);
-    TetrominoPiece = {
-      name: "J",
-      matrix: Matrix_J_0,
-      colorMatrix: tetrominoDefinition["J_ShapeColor"],
-      x: 4,
-      y: 35,
-      rotation: 1
-    }
-    rotateMatrixAntiClock(board, TetrominoPiece);
-    expect(TetrominoPiece.x).toBe(4);
-    expect(TetrominoPiece.y).toBe(35);
-    expect(TetrominoPiece.rotation).toBe(1);
   });
 
   test('Obstructed - Pass Test 5', () => {
@@ -278,7 +194,7 @@ describe('J_Block(Rotation1 -> Rotation0)', () => {
     swapTestBoard(board, obstruction_board);
     TetrominoPiece = {
       name: "J",
-      matrix: Matrix_J_0,
+      matrix: Matrix_J_1,
       colorMatrix: tetrominoDefinition["J_ShapeColor"],
       x: 4,
       y: 35,
@@ -290,7 +206,7 @@ describe('J_Block(Rotation1 -> Rotation0)', () => {
     expect(TetrominoPiece.rotation).toBe(0);
   });
 
-  test('Obstructed - Fail Test 5', () => {
+  test('Obstructed - Fail Test', () => {
     let obstruction_board = [
       [0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
       [0, 0, 1, 1, 1, 0, 0, 0, 0, 0],
@@ -306,7 +222,7 @@ describe('J_Block(Rotation1 -> Rotation0)', () => {
     swapTestBoard(board, obstruction_board);
     TetrominoPiece = {
       name: "J",
-      matrix: Matrix_J_0,
+      matrix: Matrix_J_1,
       colorMatrix: tetrominoDefinition["J_ShapeColor"],
       x: 4,
       y: 35,

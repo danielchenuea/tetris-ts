@@ -178,34 +178,6 @@ describe('L_Block(Rotation3 -> Rotation0)', () => {
     expect(TetrominoPiece.rotation).toBe(0);
   });
 
-  test('Obstructed - Fail Test 4', () => {
-    let obstruction_board = [
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
-      [0, 0, 1, 8, 8, 0, 0, 0, 0, 0],
-      [0, 0, 1, 1, 8, 0, 0, 0, 0, 0],
-      [0, 1, 1, 0, 8, 0, 0, 0, 0, 0],
-      [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    ];
-    swapTestBoard(board, obstruction_board);
-    TetrominoPiece = {
-      name: "L",
-      matrix: Matrix_L_3,
-      colorMatrix: tetrominoDefinition["L_ShapeColor"],
-      x: 4,
-      y: 35,
-      rotation: 3
-    }
-    rotateMatrixClock(board, TetrominoPiece);
-    expect(TetrominoPiece.x).toBe(4);
-    expect(TetrominoPiece.y).toBe(35);
-    expect(TetrominoPiece.rotation).toBe(3);
-  });
-
   test('Obstructed - Pass Test 5', () => {
     let obstruction_board = [
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -233,4 +205,33 @@ describe('L_Block(Rotation3 -> Rotation0)', () => {
     expect(TetrominoPiece.y).toBe(33);
     expect(TetrominoPiece.rotation).toBe(0);
   });
+
+  test('Obstructed - Fail Test', () => {
+    let obstruction_board = [
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
+      [0, 0, 1, 8, 8, 0, 0, 0, 0, 0],
+      [0, 0, 1, 1, 8, 0, 0, 0, 0, 0],
+      [0, 1, 1, 0, 8, 0, 0, 0, 0, 0],
+      [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ];
+    swapTestBoard(board, obstruction_board);
+    TetrominoPiece = {
+      name: "L",
+      matrix: Matrix_L_3,
+      colorMatrix: tetrominoDefinition["L_ShapeColor"],
+      x: 4,
+      y: 35,
+      rotation: 3
+    }
+    rotateMatrixClock(board, TetrominoPiece);
+    expect(TetrominoPiece.x).toBe(4);
+    expect(TetrominoPiece.y).toBe(35);
+    expect(TetrominoPiece.rotation).toBe(3);
+  });
+
 });

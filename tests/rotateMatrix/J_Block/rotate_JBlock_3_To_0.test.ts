@@ -150,34 +150,6 @@ describe('J_Block(Rotation3 -> Rotation0)', () => {
     expect(TetrominoPiece.rotation).toBe(0);
   });
 
-  test('Obstructed - Pass Test 3 v2', () => {
-    let obstruction_board = [
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 1, 1, 1, 8, 0, 0, 0, 0, 0],
-      [0, 1, 0, 1, 8, 0, 0, 0, 0, 0],
-      [0, 1, 0, 8, 8, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    ];
-    swapTestBoard(board, obstruction_board);
-    TetrominoPiece = {
-      name: "J",
-      matrix: Matrix_J_3,
-      colorMatrix: tetrominoDefinition["J_ShapeColor"],
-      x: 4,
-      y: 35,
-      rotation: 3
-    }
-    rotateMatrixClock(board, TetrominoPiece);
-    expect(TetrominoPiece.x).toBe(3);
-    expect(TetrominoPiece.y).toBe(36);
-    expect(TetrominoPiece.rotation).toBe(0);
-  });
-
   test('Obstructed - Pass Test 4', () => {
     let obstruction_board = [
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -185,35 +157,7 @@ describe('J_Block(Rotation3 -> Rotation0)', () => {
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 8, 0, 0, 0, 0, 0],
-      [0, 1, 1, 1, 8, 0, 0, 0, 0, 0],
-      [0, 0, 0, 8, 8, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    ];
-    swapTestBoard(board, obstruction_board);
-    TetrominoPiece = {
-      name: "J",
-      matrix: Matrix_J_3,
-      colorMatrix: tetrominoDefinition["J_ShapeColor"],
-      x: 4,
-      y: 35,
-      rotation: 3
-    }
-    rotateMatrixClock(board, TetrominoPiece);
-    expect(TetrominoPiece.x).toBe(4);
-    expect(TetrominoPiece.y).toBe(33);
-    expect(TetrominoPiece.rotation).toBe(0);
-  });
-
-  test('Obstructed - Pass Test 4 v2', () => {
-    let obstruction_board = [
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 8, 0, 0, 0, 0, 0],
-      [0, 1, 1, 0, 8, 1, 1, 1, 0, 0],
+      [0, 1, 1, 1, 8, 1, 1, 1, 0, 0],
       [0, 0, 0, 8, 8, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -262,7 +206,7 @@ describe('J_Block(Rotation3 -> Rotation0)', () => {
     expect(TetrominoPiece.rotation).toBe(0);
   });
 
-  test('Obstructed - Fail Test 5', () => {
+  test('Obstructed - Fail Test', () => {
     let obstruction_board = [
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 1, 1, 0, 0, 0, 0, 0, 0],
