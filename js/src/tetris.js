@@ -27,8 +27,8 @@ var board = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [1, 1, 1, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -36,12 +36,12 @@ var board = [
     [0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
     [0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
     [0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
-    [0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
-    [0, 0, 0, 0, 0, 0, 0, 1, 1, 1],
-    [1, 1, 1, 0, 1, 0, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 0, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 0, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 0, 1, 1, 1, 1],
+    [0, 0, 0, 0, 0, 0, 1, 1, 1, 0],
+    [0, 0, 0, 1, 1, 1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 1, 1, 1, 1, 1, 1],
+    [1, 1, 0, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 ];
 const canvas = document.getElementById("tetrisgame");
 const canvasNext = document.getElementById("tetrisnext");
@@ -64,24 +64,28 @@ const blockWidth = 40;
 const defaultTetriminoBag = ["I", "J", "L", "O", "S", "Z", "T"];
 var currentTetriminoBag = [];
 var currentTetrimino = {
-    name: "I",
-    matrix: tetrimino["I_ShapeMatrix"],
-    colorMatrix: tetrimino["I_ShapeColor"],
+    name: "T",
+    matrix: tetrimino["T_ShapeMatrix"],
+    colorMatrix: tetrimino["T_ShapeColor"],
     x: initialX,
     y: initialY,
     rotation: 0
 };
 var shadowTetrimino = {
-    name: "I",
-    matrix: tetrimino["I_ShapeMatrix"],
-    colorMatrix: tetrimino["I_ShapeColor"],
+    name: "T",
+    matrix: tetrimino["T_ShapeMatrix"],
+    colorMatrix: tetrimino["T_ShapeColor"],
     x: initialX,
     y: initialY,
     rotation: 0
 };
 var holdTetrimino = null;
 var holdSwapped = false;
-var comboNumber = -1;
+var score = 0;
+var highscore = 0;
+var combo_Number = -1;
+var tspin = false;
+var mini_tspin = false;
 function initGame() {
 }
 initGame();
@@ -168,11 +172,11 @@ export function rotateMatrixClock(board, tetris_piece) {
             M[i + j][opp] = temp;
         }
     }
-    let rotation = checkIfCanRotate(board, tetris_piece, M, mod(tetris_piece.rotation + 1, 4));
-    if (rotation !== null) {
+    let rotationOffset = checkIfCanRotate(board, tetris_piece, M, mod(tetris_piece.rotation + 1, 4));
+    if (rotationOffset !== null) {
         tetris_piece.matrix = M;
-        tetris_piece.x += rotation[0];
-        tetris_piece.y += rotation[1];
+        tetris_piece.x += rotationOffset.x;
+        tetris_piece.y += rotationOffset.y;
         tetris_piece.rotation = mod(tetris_piece.rotation + 1, 4);
     }
     ;
@@ -192,12 +196,14 @@ export function rotateMatrixAntiClock(board, tetris_piece) {
             M[opp - j][i] = temp;
         }
     }
-    let rotation = checkIfCanRotate(board, tetris_piece, M, mod(tetris_piece.rotation - 1, 4));
-    if (rotation !== null) {
+    let rotationOffset = checkIfCanRotate(board, tetris_piece, M, mod(tetris_piece.rotation - 1, 4));
+    if (rotationOffset !== null) {
         tetris_piece.matrix = M;
-        tetris_piece.x += rotation[0];
-        tetris_piece.y += rotation[1];
+        tetris_piece.x += rotationOffset.x;
+        tetris_piece.y += rotationOffset.y;
         tetris_piece.rotation = mod(tetris_piece.rotation - 1, 4);
+        if (tetris_piece.name === "T")
+            checkTSpin(board, tetris_piece, rotationOffset);
     }
 }
 function mod(n, m) {
@@ -226,10 +232,50 @@ function checkIfCanRotate(board, tetris_piece, rotatedMatrix, newRotation) {
         const [currentX, currentY] = [tetris_piece.x, tetris_piece.y];
         let collision = haveCollision(board, rotatedMatrix, currentX, currentY, rule[0], rule[1] * -1);
         if (!collision) {
-            return [rule[0], rule[1] * -1];
+            return {
+                x: rule[0],
+                y: rule[1] * -1
+            };
         }
     }
     return null;
+}
+export const TSpinDictionary = {
+    0: { front: [{ x: 0, y: 0 }, { x: 0, y: 2 }], back: [{ x: 2, y: 0 }, { x: 2, y: 2 }] },
+    1: { front: [{ x: 0, y: 2 }, { x: 2, y: 2 }], back: [{ x: 0, y: 0 }, { x: 2, y: 0 }] },
+    2: { front: [{ x: 2, y: 0 }, { x: 2, y: 2 }], back: [{ x: 0, y: 0 }, { x: 0, y: 2 }] },
+    3: { front: [{ x: 0, y: 0 }, { x: 2, y: 0 }], back: [{ x: 2, y: 0 }, { x: 2, y: 2 }] }
+};
+function checkTSpin(board, tetris_piece, movement) {
+    let frontBackPositions = TSpinDictionary[tetris_piece.rotation];
+    let matrix = [];
+    tspin = false;
+    mini_tspin = false;
+    tetris_piece.matrix.forEach((row, indexColumn) => {
+        matrix.push([]);
+        row.forEach((el, indexRow) => {
+            const middleMargin = Math.ceil(currentTetrimino.matrix.length / 2) - 1;
+            let yPos = currentTetrimino.y - middleMargin + indexColumn;
+            let xPos = currentTetrimino.x - middleMargin + indexRow;
+            if (xPos < 0 || yPos < 0)
+                matrix[indexColumn].push(1);
+            else
+                matrix[indexColumn].push(board[yPos][xPos]);
+        });
+    });
+    let front = frontBackPositions.front;
+    let back = frontBackPositions.back;
+    let frontPosition = [matrix[front[0].y][front[0].x], [front[1].y][front[1].x]];
+    let backPosition = [matrix[back[0].y][back[0].x], matrix[back[1].y][back[1].x]];
+    if (frontPosition.every(el => el !== 0) && backPosition.some(el => el !== 0)) {
+        tspin = true;
+        console.log("tspin!");
+    }
+    if (frontPosition.some(el => el !== 0) && backPosition.every(el => el !== 0)) {
+        mini_tspin = true;
+        console.log("mini_tspin!");
+    }
+    console.log(matrix);
 }
 function changeTetrimino() {
     let newTetriminoName = getTetriminoFromBag();
@@ -340,8 +386,10 @@ function checkLineComplete() {
         }
         return false;
     });
+    console.log(currentPiece_YPosition);
+    comboHandler(currentPiece_YPosition.length);
     if (currentPiece_YPosition.length !== 0) {
-        comboHandler(true);
+        combo_Number += 1;
         currentPiece_YPosition.forEach((el, index) => {
             setTimeout(() => {
                 shiftDown(el, 1);
@@ -350,7 +398,7 @@ function checkLineComplete() {
         });
     }
     else {
-        comboHandler(false);
+        combo_Number = -1;
     }
 }
 function shiftDown(yPos, numShift) {
@@ -361,13 +409,47 @@ function shiftDown(yPos, numShift) {
         });
     });
 }
-function comboHandler(didCombo) {
-    if (!didCombo)
-        comboNumber = -1;
-    else {
-        comboNumber += 1;
+function comboHandler(lineNumber = 0) {
+    if (tspin === false && mini_tspin === false) {
+        switch (lineNumber) {
+            case 1:
+                console.log("Single");
+                break;
+            case 2:
+                console.log("Double");
+                break;
+            case 3:
+                console.log("Triple");
+                break;
+            case 4:
+                console.log("Tetris!");
+                break;
+        }
     }
+    else {
+        if (tspin) {
+            switch (lineNumber) {
+                case 1:
+                    console.log("Single T-Spin!");
+                    break;
+                case 2:
+                    console.log("Double ");
+                    break;
+                case 3:
+                    console.log("Triple");
+                    break;
+            }
+        }
+        if (mini_tspin) {
+        }
+    }
+    console.log(lineNumber + " number!");
+    console.log(tspin + " with tspin!");
+    console.log(mini_tspin + " with mini-tspin!");
 }
+var mini_tspin_score = [100, 200, 400];
+var tspin_score = [400, 800, 1200];
+var combo_score = [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 5];
 function checkGameOver() {
     let threshold = board[gameOverLine];
     if (threshold.some(el => el !== 0)) {
@@ -413,7 +495,7 @@ document.addEventListener("keydown", (e) => {
             holdPiece();
             break;
         case " ":
-            SetPiece();
+            checkTSpin(board, currentTetrimino, { x: 3, y: 2 });
             break;
         case "ArrowUp":
             movePiece(board, currentTetrimino, "up");
