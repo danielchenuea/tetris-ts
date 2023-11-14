@@ -1,10 +1,10 @@
 import { rotateMatrixClock, rotateMatrixAntiClock, renderBoard } from '../../../src/tetris';
-import { Tetromino } from "../../../types/tetromino.type";
+import { Tetrimino } from "../../../types/tetrimino.type";
 
-import * as tetrominoDefinition from "../../../src/tetrominos";
+import * as tetriminoDefinition from "../../../src/tetriminos";
 
 let board : number[][];
-let TetrominoPiece : Tetromino;
+let TetriminoPiece : Tetrimino;
 let Matrix_S_0 : number[][];
 
 beforeEach(() => {
@@ -80,18 +80,18 @@ describe('S_Block(Rotation0 -> Rotation1)', () => {
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
     swapTestBoard(board, obstruction_board);
-    TetrominoPiece = {
+    TetriminoPiece = {
       name: "S",
       matrix: Matrix_S_0,
-      colorMatrix: tetrominoDefinition["S_ShapeColor"],
+      colorMatrix: tetriminoDefinition["S_ShapeColor"],
       x: 4,
       y: 35,
       rotation: 0
     }
-    rotateMatrixClock(board, TetrominoPiece);
-    expect(TetrominoPiece.x).toBe(4);
-    expect(TetrominoPiece.y).toBe(35);
-    expect(TetrominoPiece.rotation).toBe(1);
+    rotateMatrixClock(board, TetriminoPiece);
+    expect(TetriminoPiece.x).toBe(4);
+    expect(TetriminoPiece.y).toBe(35);
+    expect(TetriminoPiece.rotation).toBe(1);
   });
 
   test('Obstructed - Pass Test 2', () => {
@@ -108,18 +108,18 @@ describe('S_Block(Rotation0 -> Rotation1)', () => {
       [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
     ];
     swapTestBoard(board, obstruction_board);
-    TetrominoPiece = {
+    TetriminoPiece = {
       name: "S",
       matrix: Matrix_S_0,
-      colorMatrix: tetrominoDefinition["S_ShapeColor"],
+      colorMatrix: tetriminoDefinition["S_ShapeColor"],
       x: 4,
       y: 35,
       rotation: 0
     }
-    rotateMatrixClock(board, TetrominoPiece);
-    expect(TetrominoPiece.x).toBe(3);
-    expect(TetrominoPiece.y).toBe(35);
-    expect(TetrominoPiece.rotation).toBe(1);
+    rotateMatrixClock(board, TetriminoPiece);
+    expect(TetriminoPiece.x).toBe(3);
+    expect(TetriminoPiece.y).toBe(35);
+    expect(TetriminoPiece.rotation).toBe(1);
   });
 
   test('Obstructed - Pass Test 3', () => {
@@ -136,18 +136,18 @@ describe('S_Block(Rotation0 -> Rotation1)', () => {
       [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
     ];
     swapTestBoard(board, obstruction_board);
-    TetrominoPiece = {
+    TetriminoPiece = {
       name: "S",
       matrix: Matrix_S_0,
-      colorMatrix: tetrominoDefinition["S_ShapeColor"],
+      colorMatrix: tetriminoDefinition["S_ShapeColor"],
       x: 4,
       y: 35,
       rotation: 0
     }
-    rotateMatrixClock(board, TetrominoPiece);
-    expect(TetrominoPiece.x).toBe(3);
-    expect(TetrominoPiece.y).toBe(34);
-    expect(TetrominoPiece.rotation).toBe(1);
+    rotateMatrixClock(board, TetriminoPiece);
+    expect(TetriminoPiece.x).toBe(3);
+    expect(TetriminoPiece.y).toBe(34);
+    expect(TetriminoPiece.rotation).toBe(1);
   });
 
   test('Obstructed - Pass Test 4', () => {
@@ -164,18 +164,18 @@ describe('S_Block(Rotation0 -> Rotation1)', () => {
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
     swapTestBoard(board, obstruction_board);
-    TetrominoPiece = {
+    TetriminoPiece = {
       name: "S",
       matrix: Matrix_S_0,
-      colorMatrix: tetrominoDefinition["S_ShapeColor"],
+      colorMatrix: tetriminoDefinition["S_ShapeColor"],
       x: 4,
       y: 35,
       rotation: 0
     }
-    rotateMatrixClock(board, TetrominoPiece);
-    expect(TetrominoPiece.x).toBe(4);
-    expect(TetrominoPiece.y).toBe(37);
-    expect(TetrominoPiece.rotation).toBe(1);
+    rotateMatrixClock(board, TetriminoPiece);
+    expect(TetriminoPiece.x).toBe(4);
+    expect(TetriminoPiece.y).toBe(37);
+    expect(TetriminoPiece.rotation).toBe(1);
   });
 
   test('Obstructed - Pass Test 5', () => {
@@ -192,18 +192,18 @@ describe('S_Block(Rotation0 -> Rotation1)', () => {
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
     swapTestBoard(board, obstruction_board);
-    TetrominoPiece = {
+    TetriminoPiece = {
       name: "S",
       matrix: Matrix_S_0,
-      colorMatrix: tetrominoDefinition["S_ShapeColor"],
+      colorMatrix: tetriminoDefinition["S_ShapeColor"],
       x: 4,
       y: 35,
       rotation: 0
     }
-    rotateMatrixClock(board, TetrominoPiece);
-    expect(TetrominoPiece.x).toBe(3);
-    expect(TetrominoPiece.y).toBe(37);
-    expect(TetrominoPiece.rotation).toBe(1);
+    rotateMatrixClock(board, TetriminoPiece);
+    expect(TetriminoPiece.x).toBe(3);
+    expect(TetriminoPiece.y).toBe(37);
+    expect(TetriminoPiece.rotation).toBe(1);
   });
 
   test('Obstructed - Fail Test', () => {
@@ -220,17 +220,17 @@ describe('S_Block(Rotation0 -> Rotation1)', () => {
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
     swapTestBoard(board, obstruction_board);
-    TetrominoPiece = {
+    TetriminoPiece = {
       name: "S",
       matrix: Matrix_S_0,
-      colorMatrix: tetrominoDefinition["S_ShapeColor"],
+      colorMatrix: tetriminoDefinition["S_ShapeColor"],
       x: 4,
       y: 35,
       rotation: 0
     }
-    rotateMatrixClock(board, TetrominoPiece);
-    expect(TetrominoPiece.x).toBe(4);
-    expect(TetrominoPiece.y).toBe(35);
-    expect(TetrominoPiece.rotation).toBe(0);
+    rotateMatrixClock(board, TetriminoPiece);
+    expect(TetriminoPiece.x).toBe(4);
+    expect(TetriminoPiece.y).toBe(35);
+    expect(TetriminoPiece.rotation).toBe(0);
   });
 });

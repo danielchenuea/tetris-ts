@@ -1,11 +1,11 @@
 import { rotateMatrixClock, rotateMatrixAntiClock, renderBoard } from '../../src/tetris';
 import { Tetrimino } from "../../types/tetrimino.type";
 
-import * as tetrominoDefinition from "../../src/tetriminos";
+import * as tetriminoDefinition from "../../src/tetriminos";
 import { movePiece } from '../../src/movement';
 
 let board : number[][];
-let TetrominoPiece : Tetrimino;
+let TetriminoPiece : Tetrimino;
 let Matrix_T_0 : number[][];
 
 beforeEach(() => {
@@ -82,17 +82,17 @@ describe('Generic Block. Basic Movement.', () => {
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ];
         swapTestBoard(board, obstruction_board);
-        TetrominoPiece = {
+        TetriminoPiece = {
           name: "T",
           matrix: Matrix_T_0,
-          colorMatrix: tetrominoDefinition["T_ShapeColor"],
+          colorMatrix: tetriminoDefinition["T_ShapeColor"],
           x: 4,
           y: 35,
           rotation: 0
         }
-        movePiece(board, TetrominoPiece, "up");
-        expect(TetrominoPiece.x).toBe(4);
-        expect(TetrominoPiece.y).toBe(34);
+        movePiece(board, TetriminoPiece, "up");
+        expect(TetriminoPiece.x).toBe(4);
+        expect(TetriminoPiece.y).toBe(34);
       });
       
       test('Obstructed - Move Up', () => {
@@ -109,17 +109,17 @@ describe('Generic Block. Basic Movement.', () => {
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ];
         swapTestBoard(board, obstruction_board);
-        TetrominoPiece = {
+        TetriminoPiece = {
           name: "T",
           matrix: Matrix_T_0,
-          colorMatrix: tetrominoDefinition["T_ShapeColor"],
+          colorMatrix: tetriminoDefinition["T_ShapeColor"],
           x: 4,
           y: 35,
           rotation: 0
         }
-        movePiece(board, TetrominoPiece, "up");
-        expect(TetrominoPiece.x).toBe(4);
-        expect(TetrominoPiece.y).toBe(35);
+        movePiece(board, TetriminoPiece, "up");
+        expect(TetriminoPiece.x).toBe(4);
+        expect(TetriminoPiece.y).toBe(35);
       });
 
     test('Unobstructed - Move Right', () => {
@@ -136,17 +136,17 @@ describe('Generic Block. Basic Movement.', () => {
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       ];
       swapTestBoard(board, obstruction_board);
-      TetrominoPiece = {
+      TetriminoPiece = {
         name: "T",
         matrix: Matrix_T_0,
-        colorMatrix: tetrominoDefinition["T_ShapeColor"],
+        colorMatrix: tetriminoDefinition["T_ShapeColor"],
         x: 4,
         y: 35,
         rotation: 0
       }
-      movePiece(board, TetrominoPiece, "right");
-      expect(TetrominoPiece.x).toBe(5);
-      expect(TetrominoPiece.y).toBe(35);
+      movePiece(board, TetriminoPiece, "right");
+      expect(TetriminoPiece.x).toBe(5);
+      expect(TetriminoPiece.y).toBe(35);
     });
     
     test('Obstructed - Move Right', () => {
@@ -163,17 +163,17 @@ describe('Generic Block. Basic Movement.', () => {
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       ];
       swapTestBoard(board, obstruction_board);
-      TetrominoPiece = {
+      TetriminoPiece = {
         name: "T",
         matrix: Matrix_T_0,
-        colorMatrix: tetrominoDefinition["T_ShapeColor"],
+        colorMatrix: tetriminoDefinition["T_ShapeColor"],
         x: 4,
         y: 35,
         rotation: 0
       }
-      movePiece(board, TetrominoPiece, "right");
-      expect(TetrominoPiece.x).toBe(4);
-      expect(TetrominoPiece.y).toBe(35);
+      movePiece(board, TetriminoPiece, "right");
+      expect(TetriminoPiece.x).toBe(4);
+      expect(TetriminoPiece.y).toBe(35);
     });
 
     test('Unobstructed - Move Down', () => {
@@ -190,17 +190,17 @@ describe('Generic Block. Basic Movement.', () => {
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       ];
       swapTestBoard(board, obstruction_board);
-      TetrominoPiece = {
+      TetriminoPiece = {
         name: "T",
         matrix: Matrix_T_0,
-        colorMatrix: tetrominoDefinition["T_ShapeColor"],
+        colorMatrix: tetriminoDefinition["T_ShapeColor"],
         x: 4,
         y: 35,
         rotation: 0
       }
-      movePiece(board, TetrominoPiece, "down");
-      expect(TetrominoPiece.x).toBe(4);
-      expect(TetrominoPiece.y).toBe(36);
+      movePiece(board, TetriminoPiece, "down");
+      expect(TetriminoPiece.x).toBe(4);
+      expect(TetriminoPiece.y).toBe(36);
     });
     
     test('Obstructed - Move Down', () => {
@@ -217,17 +217,17 @@ describe('Generic Block. Basic Movement.', () => {
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       ];
       swapTestBoard(board, obstruction_board);
-      TetrominoPiece = {
+      TetriminoPiece = {
         name: "T",
         matrix: Matrix_T_0,
-        colorMatrix: tetrominoDefinition["T_ShapeColor"],
+        colorMatrix: tetriminoDefinition["T_ShapeColor"],
         x: 4,
         y: 35,
         rotation: 0
       }
-      movePiece(board, TetrominoPiece, "down");
-      expect(TetrominoPiece.x).toBe(4);
-      expect(TetrominoPiece.y).toBe(35);
+      movePiece(board, TetriminoPiece, "down");
+      expect(TetriminoPiece.x).toBe(4);
+      expect(TetriminoPiece.y).toBe(35);
     });
 
     test('Unobstructed - Move Left', () => {
@@ -244,17 +244,17 @@ describe('Generic Block. Basic Movement.', () => {
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       ];
       swapTestBoard(board, obstruction_board);
-      TetrominoPiece = {
+      TetriminoPiece = {
         name: "T",
         matrix: Matrix_T_0,
-        colorMatrix: tetrominoDefinition["T_ShapeColor"],
+        colorMatrix: tetriminoDefinition["T_ShapeColor"],
         x: 4,
         y: 35,
         rotation: 0
       }
-      movePiece(board, TetrominoPiece, "left");
-      expect(TetrominoPiece.x).toBe(3);
-      expect(TetrominoPiece.y).toBe(35);
+      movePiece(board, TetriminoPiece, "left");
+      expect(TetriminoPiece.x).toBe(3);
+      expect(TetriminoPiece.y).toBe(35);
     });
     
     test('Obstructed - Move Left', () => {
@@ -271,17 +271,17 @@ describe('Generic Block. Basic Movement.', () => {
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       ];
       swapTestBoard(board, obstruction_board);
-      TetrominoPiece = {
+      TetriminoPiece = {
         name: "T",
         matrix: Matrix_T_0,
-        colorMatrix: tetrominoDefinition["T_ShapeColor"],
+        colorMatrix: tetriminoDefinition["T_ShapeColor"],
         x: 4,
         y: 35,
         rotation: 0
       }
-      movePiece(board, TetrominoPiece, "left");
-      expect(TetrominoPiece.x).toBe(4);
-      expect(TetrominoPiece.y).toBe(35);
+      movePiece(board, TetriminoPiece, "left");
+      expect(TetriminoPiece.x).toBe(4);
+      expect(TetriminoPiece.y).toBe(35);
     });
 
 });

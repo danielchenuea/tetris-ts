@@ -8,7 +8,7 @@ export default {
   moduleNameMapper: {
     "^(\\.\\.?\\/.+)\\.js$": "$1"
   },
-  moduleDirectories: ["<rootDir>/src/", "node_modules", "src", "js/src/tetrominos.js", "js/src/rotation.js", "<rootDir>/js/src", "<rootDir>/js/"],
+  moduleDirectories: ["<rootDir>/src/", "node_modules", "src", "js/src/tetriminos.js", "js/src/rotation.js", "<rootDir>/js/src", "<rootDir>/js/"],
   coverageDirectory: './coverage',
   coveragePathIgnorePatterns: ['node_modules', 'src/database', 'src/test', 'src/types'],
   reporters: ['default', 'jest-junit'],
