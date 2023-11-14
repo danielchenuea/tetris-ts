@@ -1,7 +1,8 @@
-import { rotateMatrixClock, rotateMatrixAntiClock, renderBoard, movePiece } from '../../src/tetris';
+import { rotateMatrixClock, rotateMatrixAntiClock, renderBoard } from '../../src/tetris';
 import { Tetrimino } from "../../types/tetrimino.type";
 
 import * as tetrominoDefinition from "../../src/tetriminos";
+import { movePiece } from '../../src/movement';
 
 let board : number[][];
 let TetrominoPiece : Tetrimino;

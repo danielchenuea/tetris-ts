@@ -44,8 +44,9 @@ export const L_ShapeMatrix = [
     [0, 0, 0],
 ];
 export const O_ShapeMatrix = [
-    [1, 1],
-    [1, 1],
+    [0, 1, 1],
+    [0, 1, 1],
+    [0, 0, 0],
 ];
 export const S_ShapeMatrix = [
     [0, 1, 1],
