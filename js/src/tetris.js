@@ -1,5 +1,6 @@
 import * as tetrimino from "./tetriminos.js";
 import * as wallkicks from "./rotation.js";
+import { haveCollision } from "./collision.js";
 var board = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -384,29 +385,6 @@ function recursiveFindBottom(board, tetris_piece, x, y) {
         return { x: tetris_piece.x + x, y: tetris_piece.y + y - 1 };
     }
     return recursiveFindBottom(board, tetris_piece, x, y + 1);
-}
-function haveCollision(board, matrix, currentX, currentY, moveX, moveY) {
-    for (let indexColumn = 0; indexColumn < matrix.length; indexColumn++) {
-        for (let indexRow = 0; indexRow < matrix[indexColumn].length; indexRow++) {
-            const middleMargin = Math.ceil(matrix.length / 2) - 1;
-            const el = matrix[indexColumn][indexRow];
-            if (el === 1) {
-                let yPos = currentY - middleMargin + indexColumn;
-                let xPos = currentX - middleMargin + indexRow;
-                if (yPos + moveY < 18 || yPos + moveY > 39)
-                    return true;
-                if (xPos + moveX < 0 || xPos + moveX > 9)
-                    return true;
-                let newPosition = board[yPos + moveY][xPos + moveX];
-                if (newPosition !== 9 &&
-                    newPosition !== 0 &&
-                    newPosition !== 8) {
-                    return true;
-                }
-            }
-        }
-    }
-    return false;
 }
 document.addEventListener("keydown", (e) => {
     switch (e.key) {

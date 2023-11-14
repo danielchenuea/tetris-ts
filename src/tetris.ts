@@ -1,6 +1,7 @@
 import * as tetrimino from "./tetriminos.js";
 import * as wallkicks from "./rotation.js";
 import { Position, Tetrimino } from "../types/tetrimino.type.js";
+import { haveCollision } from "./collision.js";
 
 var board: Array<Array<number>> = [
     // 10x40
@@ -477,40 +478,40 @@ function recursiveFindBottom(
     return recursiveFindBottom(board, tetris_piece, x, y + 1);
 }
 
-function haveCollision(
-    board: number[][],
-    matrix: number[][],
-    currentX: number,
-    currentY: number,
-    moveX: number,
-    moveY: number
-): boolean {
-    for ( let indexColumn = 0; indexColumn < matrix.length; indexColumn++ ) {
-        for ( let indexRow = 0; indexRow < matrix[indexColumn].length; indexRow++ ) {
+// function haveCollision(
+//     board: number[][],
+//     matrix: number[][],
+//     currentX: number,
+//     currentY: number,
+//     moveX: number,
+//     moveY: number
+// ): boolean {
+//     for ( let indexColumn = 0; indexColumn < matrix.length; indexColumn++ ) {
+//         for ( let indexRow = 0; indexRow < matrix[indexColumn].length; indexRow++ ) {
 
-            const middleMargin = Math.ceil(matrix.length / 2) - 1;
-            const el = matrix[indexColumn][indexRow];
-            if (el === 1) {
-                let yPos = currentY - middleMargin + indexColumn;
-                let xPos = currentX - middleMargin + indexRow;
-                // if (yPos + moveY < 16 || yPos + moveY > 39) return true;
-                if (yPos + moveY < 18 || yPos + moveY > 39) return true;
-                if (xPos + moveX < 0 || xPos + moveX > 9) return true;
-                let newPosition = board[yPos + moveY][xPos + moveX];
+//             const middleMargin = Math.ceil(matrix.length / 2) - 1;
+//             const el = matrix[indexColumn][indexRow];
+//             if (el === 1) {
+//                 let yPos = currentY - middleMargin + indexColumn;
+//                 let xPos = currentX - middleMargin + indexRow;
+//                 // if (yPos + moveY < 16 || yPos + moveY > 39) return true;
+//                 if (yPos + moveY < 18 || yPos + moveY > 39) return true;
+//                 if (xPos + moveX < 0 || xPos + moveX > 9) return true;
+//                 let newPosition = board[yPos + moveY][xPos + moveX];
 
-                if (
-                    newPosition !== 9 &&
-                    newPosition !== 0 &&
-                    newPosition !== 8
-                ) {
-                    return true;
-                }
-            }
-        }
-    }
+//                 if (
+//                     newPosition !== 9 &&
+//                     newPosition !== 0 &&
+//                     newPosition !== 8
+//                 ) {
+//                     return true;
+//                 }
+//             }
+//         }
+//     }
 
-    return false;
-}
+//     return false;
+// }
 
 document.addEventListener("keydown", (e: KeyboardEvent) => {
     switch (e.key) {
