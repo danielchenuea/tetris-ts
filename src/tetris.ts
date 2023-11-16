@@ -1,7 +1,7 @@
 import * as tetrimino from "./tetriminos.js";
 import * as wallkicks from "./rotation.js";
 import { Position, Tetrimino } from "../types/tetrimino.type.js";
-import { haveCollision } from "./collision.js";
+// import { haveCollision } from "./collision.js";
 // import { createShadow } from "./shadow.js";
 
 var board: Array<Array<number>> = [
@@ -37,15 +37,15 @@ var board: Array<Array<number>> = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
-    [0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
-    [0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
-    [0, 0, 0, 0, 0, 0, 1, 1, 1, 0],
-    [0, 0, 0, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 1, 1, 1, 1, 1, 1],
-    [1, 1, 0, 1, 1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 1, 1, 1, 1, 0, 0, 0],
+    [1, 0, 0, 0, 1, 1, 1, 0, 0, 0],
+    [1, 1, 0, 1, 1, 1, 1, 0, 0, 0],
+    [1, 1, 1, 1, 1, 1, 1, 0, 0, 0],
+    [1, 1, 1, 1, 1, 1, 1, 0, 0, 0],
 ];
 const canvas = document.getElementById("tetrisgame") as HTMLCanvasElement;
 const canvasNext = document.getElementById("tetrisnext") as HTMLCanvasElement;
@@ -97,9 +97,19 @@ var holdSwapped = false;
 
 var score = 0;
 var highscore = 0;
+var highscoreBeaten = false;
+
+var timeoutTransitionPopUpMessage : NodeJS.Timeout;
+var timeoutDisplayPopUpMessage : NodeJS.Timeout;
+
 var combo_Number = -1;
+var dropHeight = 0;
+
 var tspin = false;
 var mini_tspin = false;
+
+var rAF = null;
+var framesDrop = 0;
 
 function initGame(): void {
     // Board[row][column]
@@ -111,14 +121,28 @@ function initGame(): void {
     // }
     // changeTetrimino();
     // renderBoard(board);
+    if (document.getElementById("scoreValue")) document.getElementById("scoreValue")!.innerText = score.toString();
+    if (document.getElementById("highScoreValue")) document.getElementById("highScoreValue")!.innerText = highscore.toString();
 }
 initGame();
 
 function nextLoop(): void {
-    console.log(board);
+    renderBoard();
+
+    if(++framesDrop > 35){
+        if(haveCollision(board, currentTetrimino.matrix, currentTetrimino.x, currentTetrimino.y, 0, 1)){
+            SetPiece();
+            
+        }else{
+            currentTetrimino.y += 1;
+            framesDrop = 0;
+        }
+    }
+
+    rAF = requestAnimationFrame(() => nextLoop())
 }
 
-export function renderBoard(board: number[][], drawBoard = true): void {
+function renderBoard(drawBoard = true): void {
     for (let i = 0; i < gameHeight + paddingY; i++) {
         for (let j = 0; j < gameWidth; j++) {
             if (board[i][j] === 9 || board[i][j] === 8) {
@@ -310,6 +334,20 @@ export const TSpinDictionary: { [rotation: number]: frontBackTBlock } = {
     3: {front: [{ x: 0, y: 0 }, { x: 2, y: 0 }], back: [{ x: 2, y: 0 }, { x: 2, y: 2 }]}
 }
 
+/**
+ * Something is a TSpin if:
+ *  - Had a successful rotation
+ *  - Is using a T Block.
+ * 
+ * And TSpins have 2 variations.
+ * Standard TSpin: In the 3x3 matrix. Two block-corners are filled at the front (Opposite to flatside), and at least one block-corner filled at the back.
+ * Mini TSpin: In the 3x3 matrix. Two block-corners are filled at the back (flatside), and at least one block-corner filled at the front.
+ * If the offset used as a movement for the rotation is the test 5 (variation of 1 and 2). It is a T-Spin, although it might had been a Mini TSpin setup.
+ * @param board Board of the game
+ * @param tetris_piece Current Tetrimino
+ * @param movement Movement offset
+ */
+
 function checkTSpin(board: number[][], tetris_piece: Tetrimino, movement: Position){
     let frontBackPositions = TSpinDictionary[tetris_piece.rotation];
     let matrix: number[][] = [];
@@ -326,7 +364,7 @@ function checkTSpin(board: number[][], tetris_piece: Tetrimino, movement: Positi
             let xPos = currentTetrimino.x - middleMargin + indexRow;
             
             if (xPos < 0 || yPos < 0) matrix[indexColumn].push(1);
-            else if (xPos > 9 || yPos > 39) matrix[indexColumn].push(1);
+            else if (xPos >= gameWidth || yPos >= gameHeight + paddingY) matrix[indexColumn].push(1);
             else matrix[indexColumn].push(board[yPos][xPos]);
         });
     });
@@ -338,14 +376,16 @@ function checkTSpin(board: number[][], tetris_piece: Tetrimino, movement: Positi
     if(frontPosition.every(el => el !== 0) && backPosition.some(el => el !== 0)){
         tspin = true;
         console.log("tspin!")
-    }
-    if(frontPosition.some(el => el !== 0) && backPosition.every(el => el !== 0)){
+    } else if(frontPosition.some(el => el !== 0) && backPosition.every(el => el !== 0)){
         mini_tspin = true;
         console.log("mini_tspin!")
     }
-
-    // if ()
-    console.log(matrix)
+    
+    let [xMov, yMov] = [Math.abs(movement.x), Math.abs(movement.y)];
+    if ((xMov === 1 && yMov === 2) || (xMov === 2 && yMov === 1)){
+        tspin = true;
+        mini_tspin = false;
+    }
 }
 
 type TetriminoType = "I" | "J" | "L" | "O" | "S" | "Z" | "T";
@@ -423,8 +463,8 @@ function holdPiece(): void{
 
     if (bagCanvas) drawTetriminoCanvasInfo(bagCanvas, holdTetrimino)
 
+    holdSwapped = true;
     if(temp_hold !== null) {
-        holdSwapped = true;
 
         currentTetrimino.name = temp_hold.name;
         currentTetrimino.matrix = temp_hold.matrix;
@@ -449,7 +489,7 @@ function SetPiece(): void{
                 let yPos = currentTetrimino.y - middleMargin + indexColumn;
                 let xPos = currentTetrimino.x - middleMargin + indexRow;
 
-                if (xPos < 0 || yPos < 0 || xPos > 9 || yPos > 39) return;
+                if (xPos < 0 || yPos < 0 || xPos >= gameWidth || yPos >= gameHeight + paddingY) return;
                 board[yPos][xPos] = tetrimino.tetriminoDictionary[currentTetrimino.name];
             }
         });
@@ -475,7 +515,7 @@ function checkLineComplete(){
     });
     currentPiece_YPosition = currentPiece_YPosition.filter(ypos => {
         let lineBoard = board[ypos];
-        if(lineBoard.every( el => el !== 0)){
+        if(lineBoard.every( el => el !== 0 && el !== 8)){
             return true;
         }
         return false;
@@ -487,7 +527,7 @@ function checkLineComplete(){
     currentPiece_YPosition.forEach((el, index) => {
         setTimeout(() => {
             shiftDown(el, 1);
-            renderBoard(board);
+            renderBoard();
         }, 70 * (index)) // Time delay
     })
 }
@@ -507,9 +547,8 @@ function scoreHandler(clearLinesNumber: number = 0): void{
             const sumCombo = comboValue.reduce((acc, current) => {
                 return acc + current
             }, 0)
-            if(combo_Number > 13) increaseScoreHandler(score, (sumCombo + ((combo_Number - 13) * 5)) * 50);
-            else increaseScoreHandler(score, sumCombo * 50);
-            console.log(sumCombo)
+            if(combo_Number > combo_score.length) increaseScoreHandler((sumCombo + ((combo_Number - combo_score.length) * 5)) * 50);
+            else increaseScoreHandler(sumCombo * 50);
         }
         combo_Number = -1;
     } else {
@@ -517,82 +556,101 @@ function scoreHandler(clearLinesNumber: number = 0): void{
     }
 
     if( tspin === false && mini_tspin === false ){
-        increaseScoreHandler(score, normal_score[clearLinesNumber])
+        increaseScoreHandler(normal_score[clearLinesNumber])
         switch(clearLinesNumber){
             case 1:
-                console.log("Single")
+                popMessage("Single", 1)
                 break;
             case 2:
-                console.log("Double")
+                popMessage("Double", 2)
                 break;
             case 3:
-                console.log("Triple")
+                popMessage("Triple", 3)
                 break;
             case 4:
-                console.log("Tetris!") // Difficult Clear
+                popMessage("Tetris!", 4) // Difficult Clear
                 break;
             default:
                 break;
         }
     }else{
         if( tspin ){
-            increaseScoreHandler(score, tspin_score[clearLinesNumber])
+            increaseScoreHandler(tspin_score[clearLinesNumber])
             switch(clearLinesNumber){
                 case 0:
-                    console.log("T-Spin!")
+                    popMessage("T-Spin!", 3)
                     break;
                 case 1:
-                    console.log("Single T-Spin!") // Difficult Clear
+                    popMessage("Single T-Spin!", 4) // Difficult Clear
                     break;
                 case 2:
-                    console.log("Double T-Spin!") // Difficult Clear
+                    popMessage("Double T-Spin!", 4) // Difficult Clear
                     break;
                 case 3:
-                    console.log("Triple T-Spin!") // Difficult Clear
+                    popMessage("Triple T-Spin!", 4) // Difficult Clear
                     break;
                 default:
                     break;
             }
         }
         if ( mini_tspin ){
-            increaseScoreHandler(score, mini_tspin_score[clearLinesNumber])
+            increaseScoreHandler(mini_tspin_score[clearLinesNumber])
             switch(clearLinesNumber){
                 case 0:
-                    console.log("Mini T-Spin!")
+                    popMessage("Mini T-Spin!", 2)
                     break;
                 case 1:
-                    console.log("Single Mini T-Spin!") // Difficult Clear
+                    popMessage("Single Mini T-Spin!", 4) // Difficult Clear
                     break;
                 case 2:
-                    console.log("Double Mini T-Spin!") // Difficult Clear
+                    popMessage("Double Mini T-Spin!", 4) // Difficult Clear
                     break;
                 case 3:
-                    console.log("Triple Mini T-Spin!") // Difficult Clear also impossible
+                    popMessage("Triple Mini T-Spin!", 4) // Difficult Clear also impossible
                     break;
                 default:
                     break;
             }
         }
     }
-    console.log(clearLinesNumber + " number!")
-    console.log(tspin + " with tspin!")
-    console.log(mini_tspin + " with mini-tspin!")
+
+    // HardDrop Score
+    if(dropHeight != 0){
+        increaseScoreHandler(2 * dropHeight);
+    }    
+    // console.log(clearLinesNumber + " number!")
+    // console.log(tspin + " with tspin!")
+    // console.log(mini_tspin + " with mini-tspin!")
 }
 const normal_score = [100, 300, 500, 800]
 const mini_tspin_score = [100, 200, 400, 800]
 const tspin_score = [400, 800, 1200, 1600]
 const combo_score = [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 5] // * 50
 
-function increaseScoreHandler(startPoint: number, pointIncrease: number) : void {
-    score = startPoint + pointIncrease;
+function increaseScoreHandler(pointIncrease: number): void{
+    const newScore = score + pointIncrease;
 
-    var obj = document.getElementById("scoreValue")!;
-    const end = startPoint + pointIncrease;
+    addScoreCounter("scoreValue", score, newScore)
+    score = newScore;
+
+    if(newScore > highscore){
+        addScoreCounter("highScoreValue", highscore, newScore);
+        highscore = newScore;
+        highscoreBeaten = true;
+    }
+}
+
+// https://stackoverflow.com/questions/16994662/count-animation-from-number-a-to-b
+function addScoreCounter(id: string, startPoint: number, endPoint: number) : void {
+
+    var obj = document.getElementById(id)!;
+    const range = endPoint - startPoint;
+    // const end = startPoint + pointIncrease;
     // no timer shorter than 50ms (not really visible any way)
     var minTimer = 50;
     const duration = 300;
     // calc step time to show all interediate values
-    var stepTime = Math.abs(Math.floor(duration / pointIncrease));
+    var stepTime = Math.abs(Math.floor(duration / range));
     
     // never go below minTimer
     stepTime = Math.max(stepTime, minTimer);
@@ -605,14 +663,30 @@ function increaseScoreHandler(startPoint: number, pointIncrease: number) : void 
     function run() {
         var now = new Date().getTime();
         var remaining = Math.max((endTime - now) / duration, 0);
-        var value = Math.round(end - (remaining * pointIncrease));
-        obj.innerHTML = value.toString();
-        if (value == end) {
+        var value = Math.round(endPoint - (remaining * range));
+        obj.innerText = value.toString();
+        if (value == endPoint) {
             clearInterval(timer);
         }
     }
     timer = setInterval(run, stepTime);
     run();
+}
+
+function popMessage(message: string, levelMessage: number){
+    const popMessage = document.getElementById("popUpMessage")!;
+    popMessage.innerText = message;
+    popMessage.classList.add("popup");
+    if(levelMessage > 3) popMessage.classList.add("rainbowText");
+    clearTimeout(timeoutTransitionPopUpMessage)
+    clearTimeout(timeoutDisplayPopUpMessage)
+    timeoutTransitionPopUpMessage = setTimeout(() => {
+        popMessage.classList.remove("popup");
+    }, 150)
+    timeoutDisplayPopUpMessage = setTimeout(() => {
+        popMessage.innerText = "";
+        if(levelMessage > 3) popMessage.classList.remove("rainbowText");
+    }, 2000)
 }
 
 function checkGameOver(): void{
@@ -625,6 +699,7 @@ function checkGameOver(): void{
 
 function DropPiece(): void {
     [currentTetrimino.x, currentTetrimino.y] = [ shadowTetrimino.x, shadowTetrimino.y];
+    dropHeight = shadowTetrimino.y - currentTetrimino.y;
 }
 
 function createShadow(board: number[][], tetris_piece: Tetrimino): Position {
@@ -642,40 +717,40 @@ function recursiveFindBottom(
     return recursiveFindBottom(board, tetris_piece, x, y + 1);
 }
 
-// function haveCollision(
-//     board: number[][],
-//     matrix: number[][],
-//     currentX: number,
-//     currentY: number,
-//     moveX: number,
-//     moveY: number
-// ): boolean {
-//     for ( let indexColumn = 0; indexColumn < matrix.length; indexColumn++ ) {
-//         for ( let indexRow = 0; indexRow < matrix[indexColumn].length; indexRow++ ) {
+function haveCollision(
+    board: number[][],
+    matrix: number[][],
+    currentX: number,
+    currentY: number,
+    moveX: number,
+    moveY: number
+): boolean {
+    for ( let indexColumn = 0; indexColumn < matrix.length; indexColumn++ ) {
+        for ( let indexRow = 0; indexRow < matrix[indexColumn].length; indexRow++ ) {
 
-//             const middleMargin = Math.ceil(matrix.length / 2) - 1;
-//             const el = matrix[indexColumn][indexRow];
-//             if (el === 1) {
-//                 let yPos = currentY - middleMargin + indexColumn;
-//                 let xPos = currentX - middleMargin + indexRow;
-//                 // if (yPos + moveY < 16 || yPos + moveY > 39) return true;
-//                 if (yPos + moveY < 18 || yPos + moveY > 39) return true;
-//                 if (xPos + moveX < 0 || xPos + moveX > 9) return true;
-//                 let newPosition = board[yPos + moveY][xPos + moveX];
+            const middleMargin = Math.ceil(matrix.length / 2) - 1;
+            const el = matrix[indexColumn][indexRow];
+            if (el === 1) {
+                let yPos = currentY - middleMargin + indexColumn;
+                let xPos = currentX - middleMargin + indexRow;
+                // if (yPos + moveY < 16 || yPos + moveY > 39) return true;
+                if (yPos + moveY <= gameOverLine || yPos + moveY >= gameHeight + paddingY) return true;
+                if (xPos + moveX < 0 || xPos + moveX >= gameWidth) return true;
+                let newPosition = board[yPos + moveY][xPos + moveX];
 
-//                 if (
-//                     newPosition !== 9 &&
-//                     newPosition !== 0 &&
-//                     newPosition !== 8
-//                 ) {
-//                     return true;
-//                 }
-//             }
-//         }
-//     }
+                if (
+                    newPosition !== 9 &&
+                    newPosition !== 0 &&
+                    newPosition !== 8
+                ) {
+                    return true;
+                }
+            }
+        }
+    }
 
-//     return false;
-// }
+    return false;
+}
 
 document.addEventListener("keydown", (e: KeyboardEvent) => {
     switch (e.key) {
@@ -693,14 +768,15 @@ document.addEventListener("keydown", (e: KeyboardEvent) => {
             break;
         case "c":
             // console.log(board);
-            increaseScoreHandler(score, 100)
+            increaseScoreHandler(100)
             break;
         case "d":
             changeTetrimino()
             break;
         case "v":
             // console.log(currentTetriminoBag);
-            combo_Number = 14
+            // combo_Number = 14
+            popMessage("teste", 4);
             break;
         case "q":
             holdPiece();
@@ -728,5 +804,5 @@ document.addEventListener("keydown", (e: KeyboardEvent) => {
         default:
             break;
     }
-    renderBoard(board);
+    renderBoard();
 });

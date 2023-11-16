@@ -1,4 +1,4 @@
-import { rotateMatrixClock, rotateMatrixAntiClock, renderBoard } from '../../../src/tetris';
+import { rotateMatrixClock, rotateMatrixAntiClock } from '../../../src/tetris';
 import { Tetrimino } from "../../../types/tetrimino.type";
 
 import * as tetriminoDefinition from "../../../src/tetriminos";

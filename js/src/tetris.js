@@ -1,6 +1,5 @@
 import * as tetrimino from "./tetriminos.js";
 import * as wallkicks from "./rotation.js";
-import { haveCollision } from "./collision.js";
 var board = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -33,15 +32,15 @@ var board = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
-    [0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
-    [0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
-    [0, 0, 0, 0, 0, 0, 1, 1, 1, 0],
-    [0, 0, 0, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 1, 1, 1, 1, 1, 1],
-    [1, 1, 0, 1, 1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 1, 1, 1, 1, 0, 0, 0],
+    [1, 0, 0, 0, 1, 1, 1, 0, 0, 0],
+    [1, 1, 0, 1, 1, 1, 1, 0, 0, 0],
+    [1, 1, 1, 1, 1, 1, 1, 0, 0, 0],
+    [1, 1, 1, 1, 1, 1, 1, 0, 0, 0],
 ];
 const canvas = document.getElementById("tetrisgame");
 const canvasNext = document.getElementById("tetrisnext");
@@ -83,16 +82,36 @@ var holdTetrimino = null;
 var holdSwapped = false;
 var score = 0;
 var highscore = 0;
+var highscoreBeaten = false;
+var timeoutTransitionPopUpMessage;
+var timeoutDisplayPopUpMessage;
 var combo_Number = -1;
+var dropHeight = 0;
 var tspin = false;
 var mini_tspin = false;
+var rAF = null;
+var framesDrop = 0;
 function initGame() {
+    if (document.getElementById("scoreValue"))
+        document.getElementById("scoreValue").innerText = score.toString();
+    if (document.getElementById("highScoreValue"))
+        document.getElementById("highScoreValue").innerText = highscore.toString();
 }
 initGame();
 function nextLoop() {
-    console.log(board);
+    renderBoard();
+    if (++framesDrop > 35) {
+        if (haveCollision(board, currentTetrimino.matrix, currentTetrimino.x, currentTetrimino.y, 0, 1)) {
+            SetPiece();
+        }
+        else {
+            currentTetrimino.y += 1;
+            framesDrop = 0;
+        }
+    }
+    rAF = requestAnimationFrame(() => nextLoop());
 }
-export function renderBoard(board, drawBoard = true) {
+function renderBoard(drawBoard = true) {
     for (let i = 0; i < gameHeight + paddingY; i++) {
         for (let j = 0; j < gameWidth; j++) {
             if (board[i][j] === 9 || board[i][j] === 8) {
@@ -261,7 +280,7 @@ function checkTSpin(board, tetris_piece, movement) {
             let xPos = currentTetrimino.x - middleMargin + indexRow;
             if (xPos < 0 || yPos < 0)
                 matrix[indexColumn].push(1);
-            else if (xPos > 9 || yPos > 39)
+            else if (xPos >= gameWidth || yPos >= gameHeight + paddingY)
                 matrix[indexColumn].push(1);
             else
                 matrix[indexColumn].push(board[yPos][xPos]);
@@ -275,11 +294,15 @@ function checkTSpin(board, tetris_piece, movement) {
         tspin = true;
         console.log("tspin!");
     }
-    if (frontPosition.some(el => el !== 0) && backPosition.every(el => el !== 0)) {
+    else if (frontPosition.some(el => el !== 0) && backPosition.every(el => el !== 0)) {
         mini_tspin = true;
         console.log("mini_tspin!");
     }
-    console.log(matrix);
+    let [xMov, yMov] = [Math.abs(movement.x), Math.abs(movement.y)];
+    if ((xMov === 1 && yMov === 2) || (xMov === 2 && yMov === 1)) {
+        tspin = true;
+        mini_tspin = false;
+    }
 }
 function changeTetrimino() {
     let newTetriminoName = getTetriminoFromBag();
@@ -340,8 +363,8 @@ function holdPiece() {
     holdTetrimino = Object.assign({}, currentTetrimino);
     if (bagCanvas)
         drawTetriminoCanvasInfo(bagCanvas, holdTetrimino);
+    holdSwapped = true;
     if (temp_hold !== null) {
-        holdSwapped = true;
         currentTetrimino.name = temp_hold.name;
         currentTetrimino.matrix = temp_hold.matrix;
         currentTetrimino.colorMatrix = temp_hold.colorMatrix;
@@ -361,7 +384,7 @@ function SetPiece() {
                 const middleMargin = Math.ceil(currentTetrimino.matrix.length / 2) - 1;
                 let yPos = currentTetrimino.y - middleMargin + indexColumn;
                 let xPos = currentTetrimino.x - middleMargin + indexRow;
-                if (xPos < 0 || yPos < 0 || xPos > 9 || yPos > 39)
+                if (xPos < 0 || yPos < 0 || xPos >= gameWidth || yPos >= gameHeight + paddingY)
                     return;
                 board[yPos][xPos] = tetrimino.tetriminoDictionary[currentTetrimino.name];
             }
@@ -385,7 +408,7 @@ function checkLineComplete() {
     });
     currentPiece_YPosition = currentPiece_YPosition.filter(ypos => {
         let lineBoard = board[ypos];
-        if (lineBoard.every(el => el !== 0)) {
+        if (lineBoard.every(el => el !== 0 && el !== 8)) {
             return true;
         }
         return false;
@@ -394,7 +417,7 @@ function checkLineComplete() {
     currentPiece_YPosition.forEach((el, index) => {
         setTimeout(() => {
             shiftDown(el, 1);
-            renderBoard(board);
+            renderBoard();
         }, 70 * (index));
     });
 }
@@ -413,11 +436,10 @@ function scoreHandler(clearLinesNumber = 0) {
             const sumCombo = comboValue.reduce((acc, current) => {
                 return acc + current;
             }, 0);
-            if (combo_Number > 13)
-                increaseScoreHandler(score, (sumCombo + ((combo_Number - 13) * 5)) * 50);
+            if (combo_Number > combo_score.length)
+                increaseScoreHandler((sumCombo + ((combo_Number - combo_score.length) * 5)) * 50);
             else
-                increaseScoreHandler(score, sumCombo * 50);
-            console.log(sumCombo);
+                increaseScoreHandler(sumCombo * 50);
         }
         combo_Number = -1;
     }
@@ -425,19 +447,19 @@ function scoreHandler(clearLinesNumber = 0) {
         combo_Number += 1;
     }
     if (tspin === false && mini_tspin === false) {
-        increaseScoreHandler(score, normal_score[clearLinesNumber]);
+        increaseScoreHandler(normal_score[clearLinesNumber]);
         switch (clearLinesNumber) {
             case 1:
-                console.log("Single");
+                popMessage("Single", 1);
                 break;
             case 2:
-                console.log("Double");
+                popMessage("Double", 2);
                 break;
             case 3:
-                console.log("Triple");
+                popMessage("Triple", 3);
                 break;
             case 4:
-                console.log("Tetris!");
+                popMessage("Tetris!", 4);
                 break;
             default:
                 break;
@@ -445,59 +467,68 @@ function scoreHandler(clearLinesNumber = 0) {
     }
     else {
         if (tspin) {
-            increaseScoreHandler(score, tspin_score[clearLinesNumber]);
+            increaseScoreHandler(tspin_score[clearLinesNumber]);
             switch (clearLinesNumber) {
                 case 0:
-                    console.log("T-Spin!");
+                    popMessage("T-Spin!", 3);
                     break;
                 case 1:
-                    console.log("Single T-Spin!");
+                    popMessage("Single T-Spin!", 4);
                     break;
                 case 2:
-                    console.log("Double T-Spin!");
+                    popMessage("Double T-Spin!", 4);
                     break;
                 case 3:
-                    console.log("Triple T-Spin!");
+                    popMessage("Triple T-Spin!", 4);
                     break;
                 default:
                     break;
             }
         }
         if (mini_tspin) {
-            increaseScoreHandler(score, mini_tspin_score[clearLinesNumber]);
+            increaseScoreHandler(mini_tspin_score[clearLinesNumber]);
             switch (clearLinesNumber) {
                 case 0:
-                    console.log("Mini T-Spin!");
+                    popMessage("Mini T-Spin!", 2);
                     break;
                 case 1:
-                    console.log("Single Mini T-Spin!");
+                    popMessage("Single Mini T-Spin!", 4);
                     break;
                 case 2:
-                    console.log("Double Mini T-Spin!");
+                    popMessage("Double Mini T-Spin!", 4);
                     break;
                 case 3:
-                    console.log("Triple Mini T-Spin!");
+                    popMessage("Triple Mini T-Spin!", 4);
                     break;
                 default:
                     break;
             }
         }
     }
-    console.log(clearLinesNumber + " number!");
-    console.log(tspin + " with tspin!");
-    console.log(mini_tspin + " with mini-tspin!");
+    if (dropHeight != 0) {
+        increaseScoreHandler(2 * dropHeight);
+    }
 }
 const normal_score = [100, 300, 500, 800];
 const mini_tspin_score = [100, 200, 400, 800];
 const tspin_score = [400, 800, 1200, 1600];
 const combo_score = [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 5];
-function increaseScoreHandler(startPoint, pointIncrease) {
-    score = startPoint + pointIncrease;
-    var obj = document.getElementById("scoreValue");
-    const end = startPoint + pointIncrease;
+function increaseScoreHandler(pointIncrease) {
+    const newScore = score + pointIncrease;
+    addScoreCounter("scoreValue", score, newScore);
+    score = newScore;
+    if (newScore > highscore) {
+        addScoreCounter("highScoreValue", highscore, newScore);
+        highscore = newScore;
+        highscoreBeaten = true;
+    }
+}
+function addScoreCounter(id, startPoint, endPoint) {
+    var obj = document.getElementById(id);
+    const range = endPoint - startPoint;
     var minTimer = 50;
     const duration = 300;
-    var stepTime = Math.abs(Math.floor(duration / pointIncrease));
+    var stepTime = Math.abs(Math.floor(duration / range));
     stepTime = Math.max(stepTime, minTimer);
     var startTime = new Date().getTime();
     var endTime = startTime + duration;
@@ -505,14 +536,31 @@ function increaseScoreHandler(startPoint, pointIncrease) {
     function run() {
         var now = new Date().getTime();
         var remaining = Math.max((endTime - now) / duration, 0);
-        var value = Math.round(end - (remaining * pointIncrease));
-        obj.innerHTML = value.toString();
-        if (value == end) {
+        var value = Math.round(endPoint - (remaining * range));
+        obj.innerText = value.toString();
+        if (value == endPoint) {
             clearInterval(timer);
         }
     }
     timer = setInterval(run, stepTime);
     run();
+}
+function popMessage(message, levelMessage) {
+    const popMessage = document.getElementById("popUpMessage");
+    popMessage.innerText = message;
+    popMessage.classList.add("popup");
+    if (levelMessage > 3)
+        popMessage.classList.add("rainbowText");
+    clearTimeout(timeoutTransitionPopUpMessage);
+    clearTimeout(timeoutDisplayPopUpMessage);
+    timeoutTransitionPopUpMessage = setTimeout(() => {
+        popMessage.classList.remove("popup");
+    }, 150);
+    timeoutDisplayPopUpMessage = setTimeout(() => {
+        popMessage.innerText = "";
+        if (levelMessage > 3)
+            popMessage.classList.remove("rainbowText");
+    }, 2000);
 }
 function checkGameOver() {
     let threshold = board[gameOverLine];
@@ -522,6 +570,7 @@ function checkGameOver() {
 }
 function DropPiece() {
     [currentTetrimino.x, currentTetrimino.y] = [shadowTetrimino.x, shadowTetrimino.y];
+    dropHeight = shadowTetrimino.y - currentTetrimino.y;
 }
 function createShadow(board, tetris_piece) {
     return recursiveFindBottom(board, tetris_piece, 0, 1);
@@ -531,6 +580,29 @@ function recursiveFindBottom(board, tetris_piece, x, y) {
         return { x: tetris_piece.x + x, y: tetris_piece.y + y - 1 };
     }
     return recursiveFindBottom(board, tetris_piece, x, y + 1);
+}
+function haveCollision(board, matrix, currentX, currentY, moveX, moveY) {
+    for (let indexColumn = 0; indexColumn < matrix.length; indexColumn++) {
+        for (let indexRow = 0; indexRow < matrix[indexColumn].length; indexRow++) {
+            const middleMargin = Math.ceil(matrix.length / 2) - 1;
+            const el = matrix[indexColumn][indexRow];
+            if (el === 1) {
+                let yPos = currentY - middleMargin + indexColumn;
+                let xPos = currentX - middleMargin + indexRow;
+                if (yPos + moveY <= gameOverLine || yPos + moveY >= gameHeight + paddingY)
+                    return true;
+                if (xPos + moveX < 0 || xPos + moveX >= gameWidth)
+                    return true;
+                let newPosition = board[yPos + moveY][xPos + moveX];
+                if (newPosition !== 9 &&
+                    newPosition !== 0 &&
+                    newPosition !== 8) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
 }
 document.addEventListener("keydown", (e) => {
     switch (e.key) {
@@ -547,13 +619,13 @@ document.addEventListener("keydown", (e) => {
             rotateMatrixClock(board, currentTetrimino);
             break;
         case "c":
-            increaseScoreHandler(score, 100);
+            increaseScoreHandler(100);
             break;
         case "d":
             changeTetrimino();
             break;
         case "v":
-            combo_Number = 14;
+            popMessage("teste", 4);
             break;
         case "q":
             holdPiece();
@@ -576,5 +648,5 @@ document.addEventListener("keydown", (e) => {
         default:
             break;
     }
-    renderBoard(board);
+    renderBoard();
 });
