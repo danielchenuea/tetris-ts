@@ -132,11 +132,10 @@ function nextLoop(): void {
     if(++framesDrop > 35){
         if(haveCollision(board, currentTetrimino.matrix, currentTetrimino.x, currentTetrimino.y, 0, 1)){
             SetPiece();
-            
         }else{
             currentTetrimino.y += 1;
-            framesDrop = 0;
         }
+        framesDrop = 0;
     }
 
     rAF = requestAnimationFrame(() => nextLoop())

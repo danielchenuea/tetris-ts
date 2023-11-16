@@ -106,8 +106,8 @@ function nextLoop() {
         }
         else {
             currentTetrimino.y += 1;
-            framesDrop = 0;
         }
+        framesDrop = 0;
     }
     rAF = requestAnimationFrame(() => nextLoop());
 }
