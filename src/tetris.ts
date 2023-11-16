@@ -2,6 +2,7 @@ import * as tetrimino from "./tetriminos.js";
 import * as wallkicks from "./rotation.js";
 import { Position, Tetrimino } from "../types/tetrimino.type.js";
 import { haveCollision } from "./collision.js";
+// import { createShadow } from "./shadow.js";
 
 var board: Array<Array<number>> = [
     // 10x40
@@ -225,9 +226,11 @@ export function rotateMatrixClock(board: number[][], tetris_piece: Tetrimino): v
     let rotationOffset = checkIfCanRotate(board, tetris_piece, M, mod(tetris_piece.rotation + 1, 4));
     if (rotationOffset !== null) {
         tetris_piece.matrix = M;
-        tetris_piece.x += rotationOffset.x
-        tetris_piece.y += rotationOffset.y
-        tetris_piece.rotation = mod(tetris_piece.rotation + 1, 4)
+        tetris_piece.x += rotationOffset.x;
+        tetris_piece.y += rotationOffset.y;
+        tetris_piece.rotation = mod(tetris_piece.rotation + 1, 4);
+
+        if (tetris_piece.name === "T") checkTSpin(board, tetris_piece, rotationOffset);
     };
 }
 // M[i][i + j] -> M[opp - j][i] -> M[opp][opp - j] -> M[i + j][opp] ->
@@ -250,9 +253,9 @@ export function rotateMatrixAntiClock(board: number[][], tetris_piece: Tetrimino
     let rotationOffset = checkIfCanRotate(board, tetris_piece, M, mod(tetris_piece.rotation - 1, 4));
     if (rotationOffset !== null){
         tetris_piece.matrix = M;
-        tetris_piece.x += rotationOffset.x
-        tetris_piece.y += rotationOffset.y
-        tetris_piece.rotation = mod(tetris_piece.rotation - 1, 4)
+        tetris_piece.x += rotationOffset.x;
+        tetris_piece.y += rotationOffset.y;
+        tetris_piece.rotation = mod(tetris_piece.rotation - 1, 4);
         
         if (tetris_piece.name === "T") checkTSpin(board, tetris_piece, rotationOffset);
     }
@@ -322,7 +325,8 @@ function checkTSpin(board: number[][], tetris_piece: Tetrimino, movement: Positi
             let yPos = currentTetrimino.y - middleMargin + indexColumn;
             let xPos = currentTetrimino.x - middleMargin + indexRow;
             
-            if (xPos < 0 || yPos < 0) matrix[indexColumn].push(1); 
+            if (xPos < 0 || yPos < 0) matrix[indexColumn].push(1);
+            else if (xPos > 9 || yPos > 39) matrix[indexColumn].push(1);
             else matrix[indexColumn].push(board[yPos][xPos]);
         });
     });
@@ -445,7 +449,7 @@ function SetPiece(): void{
                 let yPos = currentTetrimino.y - middleMargin + indexColumn;
                 let xPos = currentTetrimino.x - middleMargin + indexRow;
 
-                if (xPos < 0 || yPos < 0) return;
+                if (xPos < 0 || yPos < 0 || xPos > 9 || yPos > 39) return;
                 board[yPos][xPos] = tetrimino.tetriminoDictionary[currentTetrimino.name];
             }
         });
@@ -476,22 +480,16 @@ function checkLineComplete(){
         }
         return false;
     })
-    console.log(currentPiece_YPosition)
-    comboHandler(currentPiece_YPosition.length);
-    // There is completed lines
-    if(currentPiece_YPosition.length !== 0){
-        combo_Number += 1;
 
-        currentPiece_YPosition.forEach((el, index) => {
-            setTimeout(() => {
-                shiftDown(el, 1);
-                renderBoard(board);
-            }, 70 * (index))
-        })
-    } else {
-        combo_Number = -1; // ComboBreaker
-        // comboHandler(false); // ComboBreaker
-    }
+    scoreHandler(currentPiece_YPosition.length);
+    
+    // There is completed lines
+    currentPiece_YPosition.forEach((el, index) => {
+        setTimeout(() => {
+            shiftDown(el, 1);
+            renderBoard(board);
+        }, 70 * (index)) // Time delay
+    })
 }
 function shiftDown(yPos: number, numShift: number){
     let aboveShift = (JSON.parse(JSON.stringify(board)) as number[][]).slice(0, yPos);
@@ -502,9 +500,25 @@ function shiftDown(yPos: number, numShift: number){
     })
 }
 
-function comboHandler(lineNumber: number = 0): void{
+function scoreHandler(clearLinesNumber: number = 0): void{
+    if(clearLinesNumber === 0){ // Combo Break;
+        if(combo_Number > 0){
+            let comboValue = combo_score.slice(0, combo_Number + 1)
+            const sumCombo = comboValue.reduce((acc, current) => {
+                return acc + current
+            }, 0)
+            if(combo_Number > 13) increaseScoreHandler(score, (sumCombo + ((combo_Number - 13) * 5)) * 50);
+            else increaseScoreHandler(score, sumCombo * 50);
+            console.log(sumCombo)
+        }
+        combo_Number = -1;
+    } else {
+        combo_Number += 1;
+    }
+
     if( tspin === false && mini_tspin === false ){
-        switch(lineNumber){
+        increaseScoreHandler(score, normal_score[clearLinesNumber])
+        switch(clearLinesNumber){
             case 1:
                 console.log("Single")
                 break;
@@ -515,34 +529,91 @@ function comboHandler(lineNumber: number = 0): void{
                 console.log("Triple")
                 break;
             case 4:
-                console.log("Tetris!") // Hard Clear
+                console.log("Tetris!") // Difficult Clear
+                break;
+            default:
                 break;
         }
     }else{
         if( tspin ){
-            switch(lineNumber){
+            increaseScoreHandler(score, tspin_score[clearLinesNumber])
+            switch(clearLinesNumber){
+                case 0:
+                    console.log("T-Spin!")
+                    break;
                 case 1:
-                    console.log("Single T-Spin!") // Hard Clear
+                    console.log("Single T-Spin!") // Difficult Clear
                     break;
                 case 2:
-                    console.log("Double ") // Hard Clear
+                    console.log("Double T-Spin!") // Difficult Clear
                     break;
                 case 3:
-                    console.log("Triple") // Hard Clear
+                    console.log("Triple T-Spin!") // Difficult Clear
+                    break;
+                default:
                     break;
             }
         }
         if ( mini_tspin ){
-
+            increaseScoreHandler(score, mini_tspin_score[clearLinesNumber])
+            switch(clearLinesNumber){
+                case 0:
+                    console.log("Mini T-Spin!")
+                    break;
+                case 1:
+                    console.log("Single Mini T-Spin!") // Difficult Clear
+                    break;
+                case 2:
+                    console.log("Double Mini T-Spin!") // Difficult Clear
+                    break;
+                case 3:
+                    console.log("Triple Mini T-Spin!") // Difficult Clear also impossible
+                    break;
+                default:
+                    break;
+            }
         }
     }
-    console.log(lineNumber + " number!")
+    console.log(clearLinesNumber + " number!")
     console.log(tspin + " with tspin!")
     console.log(mini_tspin + " with mini-tspin!")
 }
-var mini_tspin_score = [100, 200, 400]
-var tspin_score = [400, 800, 1200]
-var combo_score = [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 5] // * 50
+const normal_score = [100, 300, 500, 800]
+const mini_tspin_score = [100, 200, 400, 800]
+const tspin_score = [400, 800, 1200, 1600]
+const combo_score = [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 5] // * 50
+
+function increaseScoreHandler(startPoint: number, pointIncrease: number) : void {
+    score = startPoint + pointIncrease;
+
+    var obj = document.getElementById("scoreValue")!;
+    const end = startPoint + pointIncrease;
+    // no timer shorter than 50ms (not really visible any way)
+    var minTimer = 50;
+    const duration = 300;
+    // calc step time to show all interediate values
+    var stepTime = Math.abs(Math.floor(duration / pointIncrease));
+    
+    // never go below minTimer
+    stepTime = Math.max(stepTime, minTimer);
+    
+    // get current time and calculate desired end time
+    var startTime = new Date().getTime();
+    var endTime = startTime + duration;
+    var timer : NodeJS.Timeout;
+  
+    function run() {
+        var now = new Date().getTime();
+        var remaining = Math.max((endTime - now) / duration, 0);
+        var value = Math.round(end - (remaining * pointIncrease));
+        obj.innerHTML = value.toString();
+        if (value == end) {
+            clearInterval(timer);
+        }
+    }
+    timer = setInterval(run, stepTime);
+    run();
+}
 
 function checkGameOver(): void{
     let threshold = board[gameOverLine];
@@ -621,13 +692,15 @@ document.addEventListener("keydown", (e: KeyboardEvent) => {
             rotateMatrixClock(board, currentTetrimino);
             break;
         case "c":
-            console.log(board);
+            // console.log(board);
+            increaseScoreHandler(score, 100)
             break;
         case "d":
             changeTetrimino()
             break;
         case "v":
-            console.log(currentTetriminoBag);
+            // console.log(currentTetriminoBag);
+            combo_Number = 14
             break;
         case "q":
             holdPiece();
