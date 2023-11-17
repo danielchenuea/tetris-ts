@@ -86,11 +86,14 @@ var highscoreBeaten = false;
 var timeoutTransitionPopUpMessage;
 var timeoutDisplayPopUpMessage;
 var combo_Number = -1;
-var dropHeight = 0;
+var hardDropHeight = 0;
+var softDropHeight = 0;
+var activateSoftDrop = false;
 var tspin = false;
 var mini_tspin = false;
 var rAF = null;
 var framesDrop = 0;
+var dropThreshold = 35;
 function initGame() {
     if (document.getElementById("scoreValue"))
         document.getElementById("scoreValue").innerText = score.toString();
@@ -100,12 +103,14 @@ function initGame() {
 initGame();
 function nextLoop() {
     renderBoard();
-    if (++framesDrop > 35) {
+    if (++framesDrop > dropThreshold) {
         if (haveCollision(board, currentTetrimino.matrix, currentTetrimino.x, currentTetrimino.y, 0, 1)) {
             SetPiece();
         }
         else {
             currentTetrimino.y += 1;
+            if (activateSoftDrop)
+                softDropHeight++;
         }
         framesDrop = 0;
     }
@@ -163,10 +168,8 @@ export function movePiece(board, tetris_piece, move) {
             tetris_piece.x += 1;
             break;
         case "down":
-            if (haveCollision(board, tetris_piece.matrix, tetris_piece.x, tetris_piece.y, 0, 1)) {
+            if (haveCollision(board, tetris_piece.matrix, tetris_piece.x, tetris_piece.y, 0, 1))
                 break;
-            }
-            ;
             tetris_piece.y += 1;
             break;
         case "left":
@@ -392,6 +395,11 @@ function SetPiece() {
     });
     checkLineComplete();
     changeTetrimino();
+    resetState();
+}
+function resetState() {
+    tspin = false;
+    mini_tspin = false;
 }
 function checkLineComplete() {
     let currentPiece_YPosition = [];
@@ -505,13 +513,18 @@ function scoreHandler(clearLinesNumber = 0) {
             }
         }
     }
-    if (dropHeight != 0) {
-        increaseScoreHandler(2 * dropHeight);
+    if (hardDropHeight != 0) {
+        increaseScoreHandler(2 * hardDropHeight);
+        hardDropHeight = 0;
+    }
+    if (softDropHeight != 0) {
+        increaseScoreHandler(softDropHeight);
+        softDropHeight = 0;
     }
 }
-const normal_score = [100, 300, 500, 800];
-const mini_tspin_score = [100, 200, 400, 800];
-const tspin_score = [400, 800, 1200, 1600];
+const normal_score = [0, 100, 300, 500, 800];
+const mini_tspin_score = [100, 200, 400, 800, 0];
+const tspin_score = [400, 800, 1200, 1600, 0];
 const combo_score = [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 5];
 function increaseScoreHandler(pointIncrease) {
     const newScore = score + pointIncrease;
@@ -568,9 +581,20 @@ function checkGameOver() {
         console.log(true);
     }
 }
-function DropPiece() {
+function SoftDropPiece(activate) {
+    if (activate) {
+        activateSoftDrop = true;
+        dropThreshold = 15;
+    }
+    else {
+        activateSoftDrop = false;
+        softDropHeight = 0;
+        dropThreshold = 35;
+    }
+}
+function HardDropPiece() {
+    hardDropHeight = shadowTetrimino.y - currentTetrimino.y;
     [currentTetrimino.x, currentTetrimino.y] = [shadowTetrimino.x, shadowTetrimino.y];
-    dropHeight = shadowTetrimino.y - currentTetrimino.y;
 }
 function createShadow(board, tetris_piece) {
     return recursiveFindBottom(board, tetris_piece, 0, 1);
@@ -589,7 +613,7 @@ function haveCollision(board, matrix, currentX, currentY, moveX, moveY) {
             if (el === 1) {
                 let yPos = currentY - middleMargin + indexColumn;
                 let xPos = currentX - middleMargin + indexRow;
-                if (yPos + moveY <= gameOverLine || yPos + moveY >= gameHeight + paddingY)
+                if (yPos + moveY <= gameOverLine - 2 || yPos + moveY >= gameHeight + paddingY)
                     return true;
                 if (xPos + moveX < 0 || xPos + moveX >= gameWidth)
                     return true;
@@ -604,12 +628,19 @@ function haveCollision(board, matrix, currentX, currentY, moveX, moveY) {
     }
     return false;
 }
+document.addEventListener("keyup", (e) => {
+    switch (e.key) {
+        case "ArrowDown":
+            SoftDropPiece(false);
+            break;
+    }
+});
 document.addEventListener("keydown", (e) => {
     switch (e.key) {
         case "z":
             break;
         case "x":
-            DropPiece();
+            HardDropPiece();
             SetPiece();
             break;
         case "a":
@@ -617,9 +648,6 @@ document.addEventListener("keydown", (e) => {
             break;
         case "s":
             rotateMatrixClock(board, currentTetrimino);
-            break;
-        case "c":
-            increaseScoreHandler(100);
             break;
         case "d":
             changeTetrimino();
@@ -633,9 +661,6 @@ document.addEventListener("keydown", (e) => {
         case " ":
             checkTSpin(board, currentTetrimino, { x: 3, y: 2 });
             break;
-        case "ArrowUp":
-            movePiece(board, currentTetrimino, "up");
-            break;
         case "ArrowLeft":
             movePiece(board, currentTetrimino, "left");
             break;
@@ -643,7 +668,7 @@ document.addEventListener("keydown", (e) => {
             movePiece(board, currentTetrimino, "right");
             break;
         case "ArrowDown":
-            movePiece(board, currentTetrimino, "down");
+            SoftDropPiece(true);
             break;
         default:
             break;

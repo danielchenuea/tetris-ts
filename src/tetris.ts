@@ -103,37 +103,34 @@ var timeoutTransitionPopUpMessage : NodeJS.Timeout;
 var timeoutDisplayPopUpMessage : NodeJS.Timeout;
 
 var combo_Number = -1;
-var dropHeight = 0;
+var hardDropHeight = 0;
+var softDropHeight = 0;
+var activateSoftDrop = false;
 
 var tspin = false;
 var mini_tspin = false;
 
 var rAF = null;
 var framesDrop = 0;
+var dropThreshold = 35;
 
 function initGame(): void {
     // Board[row][column]
-    // for (let i = 0; i < 40; i++) {
-    //     board.push([]);
-    //     for (let j = 0; j < 10; j++) {
-    //         board[i].push(0);
-    //     }
-    // }
-    // changeTetrimino();
-    // renderBoard(board);
     if (document.getElementById("scoreValue")) document.getElementById("scoreValue")!.innerText = score.toString();
     if (document.getElementById("highScoreValue")) document.getElementById("highScoreValue")!.innerText = highscore.toString();
 }
 initGame();
+// nextLoop();
 
 function nextLoop(): void {
     renderBoard();
 
-    if(++framesDrop > 35){
+    if(++framesDrop > dropThreshold){
         if(haveCollision(board, currentTetrimino.matrix, currentTetrimino.x, currentTetrimino.y, 0, 1)){
             SetPiece();
         }else{
             currentTetrimino.y += 1;
+            if(activateSoftDrop) softDropHeight++;
         }
         framesDrop = 0;
     }
@@ -216,11 +213,7 @@ export function movePiece(board: number[][], tetris_piece: Tetrimino, move: "up"
             tetris_piece.x += 1;
             break;
             case "down":
-            if (haveCollision(board, tetris_piece.matrix, tetris_piece.x, tetris_piece.y, 0, 1)) {
-                // SetPiece(board, currentTetrimino)
-                // changeTetrimino()
-                break;
-            };
+            if (haveCollision(board, tetris_piece.matrix, tetris_piece.x, tetris_piece.y, 0, 1)) break;
             tetris_piece.y += 1;
             break;
         case "left":
@@ -495,6 +488,12 @@ function SetPiece(): void{
     });
     checkLineComplete();
     changeTetrimino();
+    resetState();
+}
+
+function resetState(): void{
+    tspin = false;
+    mini_tspin = false;
 }
 
 function checkLineComplete(){
@@ -614,16 +613,21 @@ function scoreHandler(clearLinesNumber: number = 0): void{
     }
 
     // HardDrop Score
-    if(dropHeight != 0){
-        increaseScoreHandler(2 * dropHeight);
-    }    
+    if(hardDropHeight != 0){
+        increaseScoreHandler(2 * hardDropHeight);
+        hardDropHeight = 0;
+    }
+    if(softDropHeight != 0){
+        increaseScoreHandler(softDropHeight);
+        softDropHeight = 0;
+    }
     // console.log(clearLinesNumber + " number!")
     // console.log(tspin + " with tspin!")
     // console.log(mini_tspin + " with mini-tspin!")
 }
-const normal_score = [100, 300, 500, 800]
-const mini_tspin_score = [100, 200, 400, 800]
-const tspin_score = [400, 800, 1200, 1600]
+const normal_score = [0, 100, 300, 500, 800]
+const mini_tspin_score = [100, 200, 400, 800, 0]
+const tspin_score = [400, 800, 1200, 1600, 0]
 const combo_score = [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 5] // * 50
 
 function increaseScoreHandler(pointIncrease: number): void{
@@ -696,9 +700,20 @@ function checkGameOver(): void{
     }
 }
 
-function DropPiece(): void {
+function SoftDropPiece(activate: boolean): void{
+    if (activate){
+        activateSoftDrop = true;
+        dropThreshold = 15;
+    }else{
+        activateSoftDrop = false;
+        softDropHeight = 0
+        dropThreshold = 35;
+    }
+}
+
+function HardDropPiece(): void {
+    hardDropHeight = shadowTetrimino.y - currentTetrimino.y;
     [currentTetrimino.x, currentTetrimino.y] = [ shadowTetrimino.x, shadowTetrimino.y];
-    dropHeight = shadowTetrimino.y - currentTetrimino.y;
 }
 
 function createShadow(board: number[][], tetris_piece: Tetrimino): Position {
@@ -733,7 +748,7 @@ function haveCollision(
                 let yPos = currentY - middleMargin + indexColumn;
                 let xPos = currentX - middleMargin + indexRow;
                 // if (yPos + moveY < 16 || yPos + moveY > 39) return true;
-                if (yPos + moveY <= gameOverLine || yPos + moveY >= gameHeight + paddingY) return true;
+                if (yPos + moveY <= gameOverLine - 2 || yPos + moveY >= gameHeight + paddingY) return true;
                 if (xPos + moveX < 0 || xPos + moveX >= gameWidth) return true;
                 let newPosition = board[yPos + moveY][xPos + moveX];
 
@@ -751,12 +766,20 @@ function haveCollision(
     return false;
 }
 
+document.addEventListener("keyup", (e: KeyboardEvent) => {
+    switch (e.key) {
+        case "ArrowDown":
+            SoftDropPiece(false)
+            break;
+    }
+})
+
 document.addEventListener("keydown", (e: KeyboardEvent) => {
     switch (e.key) {
         case "z":
             break;
         case "x":
-            DropPiece();
+            HardDropPiece();
             SetPiece();
             break;
         case "a":
@@ -765,31 +788,17 @@ document.addEventListener("keydown", (e: KeyboardEvent) => {
         case "s":
             rotateMatrixClock(board, currentTetrimino);
             break;
-        case "c":
-            // console.log(board);
-            increaseScoreHandler(100)
-            break;
         case "d":
             changeTetrimino()
             break;
         case "v":
-            // console.log(currentTetriminoBag);
-            // combo_Number = 14
             popMessage("teste", 4);
             break;
         case "q":
             holdPiece();
             break;
         case " ":
-            // shiftDown(35, 1);
-            // checkLineComplete();
-            // SetPiece();
-            // checkGameOver();
-            // nextLoop();
             checkTSpin(board, currentTetrimino, {x: 3, y: 2});
-            break;
-        case "ArrowUp":
-            movePiece(board, currentTetrimino, "up");
             break;
         case "ArrowLeft":
             movePiece(board, currentTetrimino, "left");
@@ -798,10 +807,11 @@ document.addEventListener("keydown", (e: KeyboardEvent) => {
             movePiece(board, currentTetrimino, "right");
             break;
         case "ArrowDown":
-            movePiece(board, currentTetrimino, "down");
+            SoftDropPiece(true);
             break;
         default:
             break;
     }
     renderBoard();
+    // checkGameOver();
 });
