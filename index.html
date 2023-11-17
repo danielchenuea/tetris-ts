@@ -35,19 +35,46 @@
                 </div>
             </div>
         </div>
-        <!-- <div class="menuModal">
+        <div id="startMenu" class="menuModal">
+            <div class="headerTitle">
+                <h1>A</h1>
+            </div>
+            <!-- <label class="fpsLabel">Select your monitor FPS:</label> -->
+            <label class="fpsLabel">A:</label>
             <div class="fps">
-                <div class="fpsOptions"></div>
-                <div class="fpsOptions"></div>
-                <div class="fpsOptions"></div>
+                <div id="fpsButton" value="0" class="fpsOptions">30</div>
+                <div id="fpsButton" value="1" class="fpsOptions active">60</div>
+                <div id="fpsButton" value="2" class="fpsOptions">144</div>
             </div>
+            <!-- <label class="difficultyLabel">Difficulty: </label> -->
+            <label class="difficultyLabel">A: </label>
             <div class="difficulty">
-                <div class="difficultyOptions"></div>
-                <div class="difficultyOptions"></div>
-                <div class="difficultyOptions"></div>
+                <div id="difficultyButton" value="0" class="difficultyOptions">Easy</div>
+                <div id="difficultyButton" value="1" class="difficultyOptions active">Normal</div>
+                <div id="difficultyButton" value="2" class="difficultyOptions">Hard</div>
             </div>
-        </div> -->
+            <div id="initGame" class="gameButton">Start Game</div>
+        </div>
+        <div id="gameOverMenu" class="menuModal" style="display: none;">
+            <div class="headerTitle">
+                <h1>B</h1>
+            </div>
+            <p id="newRecord" style="display: none;">
+                New Record!
+            </p>
+            <label class="scoreLabel">B:</label>
+            <p id="scoreGameOver">
+                0
+            </p>
+            <label class="highScoreLabel">B: </label>
+            <p id="highScoreGameOver">
+                0
+            </p>
+            <div id="resetGame" class="gameButton">Try Again</div>
+            <div id="backToMenu" class="gameButton">Back to Start</div>
+        </div>
     </div>
+    <script type="module" src="./node_modules/jquery/dist/jquery.js"></script>
     <script type="module" src="./js/src/main.js" ></script>
     <link rel="stylesheet" href="./css/game.css" />
 </body>

@@ -1,5 +1,8 @@
 import * as tetrimino from "./tetriminos.js";
 import * as wallkicks from "./rotation.js";
+import { transitionTwoNumbers } from "./utils/twoNumberTransition.js";
+import { getScoreStorage, setScoreStorage } from "./utils/localstorageHandler.js";
+import { hideMenu, showMenu } from "./utils/showhideMenu.js";
 var board = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -60,6 +63,7 @@ const initialY = 19;
 const gameOverLine = 19;
 const blockHeight = 40;
 const blockWidth = 40;
+const menuDelay = 200;
 const defaultTetriminoBag = ["I", "J", "L", "O", "S", "Z", "T"];
 var currentTetriminoBag = [];
 var currentTetrimino = {
@@ -91,16 +95,53 @@ var softDropHeight = 0;
 var activateSoftDrop = false;
 var tspin = false;
 var mini_tspin = false;
-var rAF = null;
+var RAF = null;
 var framesDrop = 0;
 var dropThreshold = 35;
-function initGame() {
+var normalDropSpeed = [
+    [23, 18, 13],
+    [45, 35, 25],
+    [108, 84, 60],
+];
+var fastDropSpeed = [
+    [18, 13, 8],
+    [35, 25, 15],
+    [84, 60, 36],
+];
+var fps = "60";
+var difficulty = "1";
+export function initGame() {
+    for (let i = 0; i < gameHeight + paddingY; i++) {
+        for (let j = 0; j < gameWidth; j++) {
+        }
+    }
+    dropThreshold = normalDropSpeed[parseInt(fps)][parseInt(difficulty)];
+    $("#newRecord").hide();
+    score = getScoreStorage("tetrists-currentscore");
+    highscore = getScoreStorage("tetrists-highscore");
     if (document.getElementById("scoreValue"))
         document.getElementById("scoreValue").innerText = score.toString();
     if (document.getElementById("highScoreValue"))
         document.getElementById("highScoreValue").innerText = highscore.toString();
+    nextLoop();
 }
-initGame();
+function checkGameOver() {
+    let threshold = board[gameOverLine];
+    if (threshold.some(el => el !== 0)) {
+        endGame();
+    }
+}
+function endGame() {
+    if (RAF)
+        cancelAnimationFrame(RAF);
+    showMenu("gameOverMenu", () => {
+        if (highscoreBeaten) {
+            $("#newRecord").show();
+        }
+        transitionTwoNumbers("scoreGameOver", 0, getScoreStorage("tetrists-currentscore"), { transitionDelay: 600 });
+        transitionTwoNumbers("highScoreGameOver", 0, getScoreStorage("tetrists-highscore"), { transitionDelay: 600 });
+    });
+}
 function nextLoop() {
     renderBoard();
     if (++framesDrop > dropThreshold) {
@@ -114,7 +155,7 @@ function nextLoop() {
         }
         framesDrop = 0;
     }
-    rAF = requestAnimationFrame(() => nextLoop());
+    RAF = requestAnimationFrame(() => nextLoop());
 }
 function renderBoard(drawBoard = true) {
     for (let i = 0; i < gameHeight + paddingY; i++) {
@@ -264,7 +305,7 @@ function checkIfCanRotate(board, tetris_piece, rotatedMatrix, newRotation) {
     }
     return null;
 }
-export const TSpinDictionary = {
+const TSpinDictionary = {
     0: { front: [{ x: 0, y: 0 }, { x: 0, y: 2 }], back: [{ x: 2, y: 0 }, { x: 2, y: 2 }] },
     1: { front: [{ x: 0, y: 2 }, { x: 2, y: 2 }], back: [{ x: 0, y: 0 }, { x: 2, y: 0 }] },
     2: { front: [{ x: 2, y: 0 }, { x: 2, y: 2 }], back: [{ x: 0, y: 0 }, { x: 0, y: 2 }] },
@@ -393,6 +434,7 @@ function SetPiece() {
             }
         });
     });
+    checkGameOver();
     checkLineComplete();
     changeTetrimino();
     resetState();
@@ -528,35 +570,15 @@ const tspin_score = [400, 800, 1200, 1600, 0];
 const combo_score = [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 5];
 function increaseScoreHandler(pointIncrease) {
     const newScore = score + pointIncrease;
-    addScoreCounter("scoreValue", score, newScore);
+    transitionTwoNumbers("scoreValue", score, newScore);
     score = newScore;
+    setScoreStorage("tetrists-currentscore", newScore);
     if (newScore > highscore) {
-        addScoreCounter("highScoreValue", highscore, newScore);
+        transitionTwoNumbers("highScoreValue", highscore, newScore);
         highscore = newScore;
         highscoreBeaten = true;
+        setScoreStorage("tetrists-highscore", newScore);
     }
-}
-function addScoreCounter(id, startPoint, endPoint) {
-    var obj = document.getElementById(id);
-    const range = endPoint - startPoint;
-    var minTimer = 50;
-    const duration = 300;
-    var stepTime = Math.abs(Math.floor(duration / range));
-    stepTime = Math.max(stepTime, minTimer);
-    var startTime = new Date().getTime();
-    var endTime = startTime + duration;
-    var timer;
-    function run() {
-        var now = new Date().getTime();
-        var remaining = Math.max((endTime - now) / duration, 0);
-        var value = Math.round(endPoint - (remaining * range));
-        obj.innerText = value.toString();
-        if (value == endPoint) {
-            clearInterval(timer);
-        }
-    }
-    timer = setInterval(run, stepTime);
-    run();
 }
 function popMessage(message, levelMessage) {
     const popMessage = document.getElementById("popUpMessage");
@@ -575,21 +597,15 @@ function popMessage(message, levelMessage) {
             popMessage.classList.remove("rainbowText");
     }, 2000);
 }
-function checkGameOver() {
-    let threshold = board[gameOverLine];
-    if (threshold.some(el => el !== 0)) {
-        console.log(true);
-    }
-}
 function SoftDropPiece(activate) {
     if (activate) {
         activateSoftDrop = true;
-        dropThreshold = 15;
+        dropThreshold = fastDropSpeed[parseInt(fps)][parseInt(difficulty)];
     }
     else {
         activateSoftDrop = false;
         softDropHeight = 0;
-        dropThreshold = 35;
+        dropThreshold = normalDropSpeed[parseInt(fps)][parseInt(difficulty)];
     }
 }
 function HardDropPiece() {
@@ -659,7 +675,7 @@ document.addEventListener("keydown", (e) => {
             holdPiece();
             break;
         case " ":
-            checkTSpin(board, currentTetrimino, { x: 3, y: 2 });
+            console.log($('div[id^="difficultyButton"][class$="active"]').attr("value"));
             break;
         case "ArrowLeft":
             movePiece(board, currentTetrimino, "left");
@@ -674,4 +690,27 @@ document.addEventListener("keydown", (e) => {
             break;
     }
     renderBoard();
+});
+$('div[id^="fpsButton"]').on("click", function (event) {
+    $(this).parent().children().removeClass("active");
+    $(this).addClass("active");
+    fps = $(this).attr("value") ? $(this).attr("value") : "";
+});
+$('div[id^="difficultyButton"]').on("click", function (event) {
+    $(this).parent().children().removeClass("active");
+    $(this).addClass("active");
+    difficulty = $(this).attr("value") ? $(this).attr("value") : "";
+});
+$("#initGame").on("click", function () {
+    hideMenu("startMenu", menuDelay, () => {
+        showMenu("gameOverMenu");
+    });
+});
+$("#resetGame").on("click", function () {
+    hideMenu("gameOverMenu", menuDelay, () => {
+        showMenu("gameOverMenu");
+    });
+});
+$("#backToMenu").on("click", function () {
+    hideMenu("gameOverMenu", menuDelay, () => showMenu("startMenu"));
 });

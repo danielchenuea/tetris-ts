@@ -1,8 +1,9 @@
 import * as tetrimino from "./tetriminos.js";
 import * as wallkicks from "./rotation.js";
 import { Position, Tetrimino } from "../types/tetrimino.type.js";
-// import { haveCollision } from "./collision.js";
-// import { createShadow } from "./shadow.js";
+import { transitionTwoNumbers } from "./utils/twoNumberTransition.js";
+import { getScoreStorage, setScoreStorage } from "./utils/localstorageHandler.js";
+import { hideMenu, showMenu } from "./utils/showhideMenu.js";
 
 var board: Array<Array<number>> = [
     // 10x40
@@ -68,9 +69,10 @@ const initialY = 19;
 
 const gameOverLine = 19
 
-//Px
 const blockHeight = 40;
 const blockWidth = 40;
+
+const menuDelay = 200;
 
 const defaultTetriminoBag: string[] = ["I", "J", "L", "O", "S", "Z", "T"];
 
@@ -110,17 +112,69 @@ var activateSoftDrop = false;
 var tspin = false;
 var mini_tspin = false;
 
-var rAF = null;
+var RAF : number | null = null;
 var framesDrop = 0;
 var dropThreshold = 35;
+var normalDropSpeed = [
+    [23, 18, 13],
+    [45, 35, 25],
+    [108, 84, 60],
+];
+var fastDropSpeed = [
+    [18, 13, 8],
+    [35, 25, 15],
+    [84, 60, 36],
+];
 
-function initGame(): void {
+var fps = "60";
+var difficulty = "1";
+
+export function initGame(): void {
     // Board[row][column]
+    for (let i = 0; i < gameHeight + paddingY; i++) {
+        // board.push([]);
+        for (let j = 0; j < gameWidth; j++) {
+            // board[i].push(0);
+        }
+    }
+    // Set FPS;
+
+    // Set Difficulty
+    dropThreshold = normalDropSpeed[parseInt(fps)][parseInt(difficulty)]
+
+    $("#newRecord").hide();
+    score = getScoreStorage("tetrists-currentscore");
+    highscore = getScoreStorage("tetrists-highscore");
+
     if (document.getElementById("scoreValue")) document.getElementById("scoreValue")!.innerText = score.toString();
     if (document.getElementById("highScoreValue")) document.getElementById("highScoreValue")!.innerText = highscore.toString();
+    nextLoop();
 }
-initGame();
-// nextLoop();
+
+
+function checkGameOver(): void{
+    let threshold = board[gameOverLine];
+    
+    if (threshold.some(el => el !== 0)){ 
+        endGame();
+    }
+}
+
+function endGame(): void{
+    if (RAF) cancelAnimationFrame(RAF)
+
+    showMenu("gameOverMenu", () => {
+
+        if(highscoreBeaten){
+            $("#newRecord").show();
+        }
+
+        transitionTwoNumbers("scoreGameOver", 0, getScoreStorage("tetrists-currentscore"), { transitionDelay: 600 })
+        transitionTwoNumbers("highScoreGameOver", 0, getScoreStorage("tetrists-highscore"), { transitionDelay: 600 })
+    })
+
+}
+
 
 function nextLoop(): void {
     renderBoard();
@@ -135,7 +189,7 @@ function nextLoop(): void {
         framesDrop = 0;
     }
 
-    rAF = requestAnimationFrame(() => nextLoop())
+    RAF = requestAnimationFrame(() => nextLoop())
 }
 
 function renderBoard(drawBoard = true): void {
@@ -212,7 +266,7 @@ export function movePiece(board: number[][], tetris_piece: Tetrimino, move: "up"
             if (haveCollision(board, tetris_piece.matrix, tetris_piece.x, tetris_piece.y, 1, 0)) break;
             tetris_piece.x += 1;
             break;
-            case "down":
+        case "down":
             if (haveCollision(board, tetris_piece.matrix, tetris_piece.x, tetris_piece.y, 0, 1)) break;
             tetris_piece.y += 1;
             break;
@@ -319,7 +373,7 @@ interface frontBackTBlock {
     back: Position[]
 }
 
-export const TSpinDictionary: { [rotation: number]: frontBackTBlock } = {
+const TSpinDictionary: { [rotation: number]: frontBackTBlock } = {
     0: {front: [{ x: 0, y: 0 }, { x: 0, y: 2 }], back: [{ x: 2, y: 0 }, { x: 2, y: 2 }]},
     1: {front: [{ x: 0, y: 2 }, { x: 2, y: 2 }], back: [{ x: 0, y: 0 }, { x: 2, y: 0 }]},
     2: {front: [{ x: 2, y: 0 }, { x: 2, y: 2 }], back: [{ x: 0, y: 0 }, { x: 0, y: 2 }]},
@@ -486,6 +540,7 @@ function SetPiece(): void{
             }
         });
     });
+    checkGameOver();
     checkLineComplete();
     changeTetrimino();
     resetState();
@@ -633,47 +688,16 @@ const combo_score = [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 5] // * 50
 function increaseScoreHandler(pointIncrease: number): void{
     const newScore = score + pointIncrease;
 
-    addScoreCounter("scoreValue", score, newScore)
+    transitionTwoNumbers("scoreValue", score, newScore)
     score = newScore;
 
+    setScoreStorage("tetrists-currentscore", newScore);
     if(newScore > highscore){
-        addScoreCounter("highScoreValue", highscore, newScore);
+        transitionTwoNumbers("highScoreValue", highscore, newScore);
         highscore = newScore;
         highscoreBeaten = true;
+        setScoreStorage("tetrists-highscore", newScore);
     }
-}
-
-// https://stackoverflow.com/questions/16994662/count-animation-from-number-a-to-b
-function addScoreCounter(id: string, startPoint: number, endPoint: number) : void {
-
-    var obj = document.getElementById(id)!;
-    const range = endPoint - startPoint;
-    // const end = startPoint + pointIncrease;
-    // no timer shorter than 50ms (not really visible any way)
-    var minTimer = 50;
-    const duration = 300;
-    // calc step time to show all interediate values
-    var stepTime = Math.abs(Math.floor(duration / range));
-    
-    // never go below minTimer
-    stepTime = Math.max(stepTime, minTimer);
-    
-    // get current time and calculate desired end time
-    var startTime = new Date().getTime();
-    var endTime = startTime + duration;
-    var timer : NodeJS.Timeout;
-  
-    function run() {
-        var now = new Date().getTime();
-        var remaining = Math.max((endTime - now) / duration, 0);
-        var value = Math.round(endPoint - (remaining * range));
-        obj.innerText = value.toString();
-        if (value == endPoint) {
-            clearInterval(timer);
-        }
-    }
-    timer = setInterval(run, stepTime);
-    run();
 }
 
 function popMessage(message: string, levelMessage: number){
@@ -692,22 +716,14 @@ function popMessage(message: string, levelMessage: number){
     }, 2000)
 }
 
-function checkGameOver(): void{
-    let threshold = board[gameOverLine];
-    
-    if (threshold.some(el => el !== 0)){
-        console.log(true);    
-    }
-}
-
 function SoftDropPiece(activate: boolean): void{
     if (activate){
         activateSoftDrop = true;
-        dropThreshold = 15;
+        dropThreshold = fastDropSpeed[parseInt(fps)][parseInt(difficulty)]
     }else{
         activateSoftDrop = false;
-        softDropHeight = 0
-        dropThreshold = 35;
+        softDropHeight = 0;
+        dropThreshold = normalDropSpeed[parseInt(fps)][parseInt(difficulty)]
     }
 }
 
@@ -798,7 +814,8 @@ document.addEventListener("keydown", (e: KeyboardEvent) => {
             holdPiece();
             break;
         case " ":
-            checkTSpin(board, currentTetrimino, {x: 3, y: 2});
+            // checkTSpin(board, currentTetrimino, {x: 3, y: 2});
+            console.log($('div[id^="difficultyButton"][class$="active"]').attr("value"))
             break;
         case "ArrowLeft":
             movePiece(board, currentTetrimino, "left");
@@ -815,3 +832,33 @@ document.addEventListener("keydown", (e: KeyboardEvent) => {
     renderBoard();
     // checkGameOver();
 });
+
+$('div[id^="fpsButton"]').on("click", function (event: JQuery.Event) {
+    $(this).parent().children().removeClass("active");
+    $(this).addClass("active");
+    fps = $(this).attr("value") ? $(this).attr("value")! : "";
+})
+
+$('div[id^="difficultyButton"]').on("click", function (event: JQuery.Event) {
+    $(this).parent().children().removeClass("active");
+    $(this).addClass("active");
+    difficulty = $(this).attr("value") ? $(this).attr("value")! : "";
+})
+
+$("#initGame").on("click", function(){
+    hideMenu("startMenu", menuDelay, () => {
+        // initGame();
+        showMenu("gameOverMenu")
+    })
+})
+
+$("#resetGame").on("click", function(){
+    hideMenu("gameOverMenu", menuDelay, () => {
+        // initGame();
+        showMenu("gameOverMenu")
+    })
+})
+
+$("#backToMenu").on("click", function(){
+    hideMenu("gameOverMenu", menuDelay, () => showMenu("startMenu"))
+})
