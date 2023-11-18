@@ -673,7 +673,7 @@ document.addEventListener("keydown", (e) => {
     if (gameover)
         return;
     switch (e.key) {
-        case "x":
+        case " ":
             HardDropPiece();
             SetPiece();
             break;
@@ -683,7 +683,15 @@ document.addEventListener("keydown", (e) => {
         case "s":
             rotateMatrixClock(board, currentTetrimino);
             break;
-        case "q":
+        case "ArrowUp":
+            rotateMatrixClock(board, currentTetrimino);
+            rotateMatrixClock(board, currentTetrimino);
+            break;
+        case "Z":
+            rotateMatrixAntiClock(board, currentTetrimino);
+            rotateMatrixAntiClock(board, currentTetrimino);
+            break;
+        case "c":
             holdPiece();
             break;
         case "ArrowLeft":

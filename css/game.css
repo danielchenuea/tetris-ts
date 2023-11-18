@@ -139,6 +139,12 @@ body{
     color: white;
     user-select: none;
 }
+.headerTitle h1{
+    font-size: 50px;
+}
+.headerTitle h4{
+    font-size: 20px;
+}
 
 
 .fpsLabel{

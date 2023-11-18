@@ -811,7 +811,7 @@ document.addEventListener("keyup", (e: KeyboardEvent) => {
 document.addEventListener("keydown", (e: KeyboardEvent) => {
     if(gameover) return;
     switch (e.key) {
-        case "x":
+        case " ":
             HardDropPiece();
             SetPiece();
             break;
@@ -821,7 +821,15 @@ document.addEventListener("keydown", (e: KeyboardEvent) => {
         case "s":
             rotateMatrixClock(board, currentTetrimino);
             break;
-        case "q":
+        case "ArrowUp":
+            rotateMatrixClock(board, currentTetrimino);
+            rotateMatrixClock(board, currentTetrimino);
+            break;
+        case "Z":
+            rotateMatrixAntiClock(board, currentTetrimino);
+            rotateMatrixAntiClock(board, currentTetrimino);
+            break;
+        case "c":
             holdPiece();
             break;
         case "ArrowLeft":
@@ -854,14 +862,12 @@ $('div[id^="difficultyButton"]').on("click", function (event: JQuery.Event) {
 $("#initGame").on("click", function(){
     hideMenu("startMenu", menuDelay, () => {
         initGame();
-        // showMenu("gameOverMenu")
     })
 })
 
 $("#resetGame").on("click", function(){
     hideMenu("gameOverMenu", menuDelay, () => {
         initGame();
-        // showMenu("gameOverMenu")
     })
 })
 
