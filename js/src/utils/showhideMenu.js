@@ -7,7 +7,6 @@ export function hideMenu(id, hideDelay, afterHide) {
     }, hideDelay);
 }
 export function showMenu(id, afterShow) {
-    console.log("123");
     $(`#${id}`).show();
     $(`#${id}`).removeClass("hidden");
     if (afterShow)

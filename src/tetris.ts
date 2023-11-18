@@ -127,7 +127,7 @@ var fastDropSpeed = [
     [84, 60, 36],
 ];
 
-var gameover = false;
+var gameover = true;
 
 var fps = "1";
 var difficulty = "1";
@@ -811,8 +811,6 @@ document.addEventListener("keyup", (e: KeyboardEvent) => {
 document.addEventListener("keydown", (e: KeyboardEvent) => {
     if(gameover) return;
     switch (e.key) {
-        case "z":
-            break;
         case "x":
             HardDropPiece();
             SetPiece();
@@ -823,18 +821,8 @@ document.addEventListener("keydown", (e: KeyboardEvent) => {
         case "s":
             rotateMatrixClock(board, currentTetrimino);
             break;
-        case "d":
-            changeTetrimino()
-            break;
-        case "v":
-            popMessage("teste", 4);
-            break;
         case "q":
             holdPiece();
-            break;
-        case " ":
-            // checkTSpin(board, currentTetrimino, {x: 3, y: 2});
-            console.log($('div[id^="difficultyButton"][class$="active"]').attr("value"))
             break;
         case "ArrowLeft":
             movePiece(board, currentTetrimino, "left");
@@ -849,7 +837,6 @@ document.addEventListener("keydown", (e: KeyboardEvent) => {
             break;
     }
     renderBoard();
-    // checkGameOver();
 });
 
 $('div[id^="fpsButton"]').on("click", function (event: JQuery.Event) {
