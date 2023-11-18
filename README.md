@@ -6,7 +6,7 @@
 
 A TypeScript Practice utilizing Tetris. Made by me, Bravesa. Not for optimized use.
 
-You can play it here: [LiNK](https://danielchenuea.github.io/tetris-ts/)
+You can play it here: [LINK](https://danielchenuea.github.io/tetris-ts/)
 
 ## TODOLIST:
  - Infinity System
