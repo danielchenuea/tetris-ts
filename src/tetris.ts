@@ -105,6 +105,7 @@ var timeoutTransitionPopUpMessage : NodeJS.Timeout;
 var timeoutDisplayPopUpMessage : NodeJS.Timeout;
 
 var combo_Number = -1;
+// var hardCombo = false;
 var hardDropHeight = 0;
 var softDropHeight = 0;
 var activateSoftDrop = false;
@@ -126,25 +127,36 @@ var fastDropSpeed = [
     [84, 60, 36],
 ];
 
-var fps = "60";
+var gameover = false;
+
+var fps = "1";
 var difficulty = "1";
 
 export function initGame(): void {
     // Board[row][column]
+    board = [];
     for (let i = 0; i < gameHeight + paddingY; i++) {
-        // board.push([]);
+        board.push([]);
         for (let j = 0; j < gameWidth; j++) {
-            // board[i].push(0);
+            board[i].push(0);
         }
     }
-    // Set FPS;
 
+    // Set FPS;
     // Set Difficulty
     dropThreshold = normalDropSpeed[parseInt(fps)][parseInt(difficulty)]
 
+    // reset score related
     $("#newRecord").hide();
-    score = getScoreStorage("tetrists-currentscore");
+    setScoreStorage("tetrists-currentscore", 0)
+    score = 0;
     highscore = getScoreStorage("tetrists-highscore");
+
+    //reset bag
+    currentTetriminoBag = [];
+    changeTetrimino();
+
+    gameover = false;
 
     if (document.getElementById("scoreValue")) document.getElementById("scoreValue")!.innerText = score.toString();
     if (document.getElementById("highScoreValue")) document.getElementById("highScoreValue")!.innerText = highscore.toString();
@@ -161,7 +173,8 @@ function checkGameOver(): void{
 }
 
 function endGame(): void{
-    if (RAF) cancelAnimationFrame(RAF)
+    if (RAF != null) cancelAnimationFrame(RAF)
+    gameover = true;
 
     showMenu("gameOverMenu", () => {
 
@@ -177,7 +190,8 @@ function endGame(): void{
 
 
 function nextLoop(): void {
-    renderBoard();
+    // if(gameover && RAF != null) cancelAnimationFrame(RAF)
+    // if(gameover) return
 
     if(++framesDrop > dropThreshold){
         if(haveCollision(board, currentTetrimino.matrix, currentTetrimino.x, currentTetrimino.y, 0, 1)){
@@ -188,11 +202,15 @@ function nextLoop(): void {
         }
         framesDrop = 0;
     }
+    renderBoard();
+    if(!gameover){
+        RAF = requestAnimationFrame(() => nextLoop())
 
-    RAF = requestAnimationFrame(() => nextLoop())
+    }
 }
 
 function renderBoard(drawBoard = true): void {
+    if(gameCanvas) gameCanvas.clearRect(0, 0, boxWidth, boxHeight)
     for (let i = 0; i < gameHeight + paddingY; i++) {
         for (let j = 0; j < gameWidth; j++) {
             if (board[i][j] === 9 || board[i][j] === 8) {
@@ -525,6 +543,8 @@ function holdPiece(): void{
 
 function SetPiece(): void{
     holdSwapped = false; // reset Hold
+    checkGameOver();
+    if(gameover) return;
 
     currentTetrimino.matrix.forEach((row, indexColumn) => {
         row.forEach((el, indexRow) => {
@@ -540,7 +560,6 @@ function SetPiece(): void{
             }
         });
     });
-    checkGameOver();
     checkLineComplete();
     changeTetrimino();
     resetState();
@@ -676,9 +695,6 @@ function scoreHandler(clearLinesNumber: number = 0): void{
         increaseScoreHandler(softDropHeight);
         softDropHeight = 0;
     }
-    // console.log(clearLinesNumber + " number!")
-    // console.log(tspin + " with tspin!")
-    // console.log(mini_tspin + " with mini-tspin!")
 }
 const normal_score = [0, 100, 300, 500, 800]
 const mini_tspin_score = [100, 200, 400, 800, 0]
@@ -730,6 +746,7 @@ function SoftDropPiece(activate: boolean): void{
 function HardDropPiece(): void {
     hardDropHeight = shadowTetrimino.y - currentTetrimino.y;
     [currentTetrimino.x, currentTetrimino.y] = [ shadowTetrimino.x, shadowTetrimino.y];
+    renderBoard();
 }
 
 function createShadow(board: number[][], tetris_piece: Tetrimino): Position {
@@ -783,6 +800,7 @@ function haveCollision(
 }
 
 document.addEventListener("keyup", (e: KeyboardEvent) => {
+    if(gameover) return;
     switch (e.key) {
         case "ArrowDown":
             SoftDropPiece(false)
@@ -791,6 +809,7 @@ document.addEventListener("keyup", (e: KeyboardEvent) => {
 })
 
 document.addEventListener("keydown", (e: KeyboardEvent) => {
+    if(gameover) return;
     switch (e.key) {
         case "z":
             break;
@@ -847,15 +866,15 @@ $('div[id^="difficultyButton"]').on("click", function (event: JQuery.Event) {
 
 $("#initGame").on("click", function(){
     hideMenu("startMenu", menuDelay, () => {
-        // initGame();
-        showMenu("gameOverMenu")
+        initGame();
+        // showMenu("gameOverMenu")
     })
 })
 
 $("#resetGame").on("click", function(){
     hideMenu("gameOverMenu", menuDelay, () => {
-        // initGame();
-        showMenu("gameOverMenu")
+        initGame();
+        // showMenu("gameOverMenu")
     })
 })
 

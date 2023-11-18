@@ -108,17 +108,25 @@ var fastDropSpeed = [
     [35, 25, 15],
     [84, 60, 36],
 ];
-var fps = "60";
+var gameover = false;
+var fps = "1";
 var difficulty = "1";
 export function initGame() {
+    board = [];
     for (let i = 0; i < gameHeight + paddingY; i++) {
+        board.push([]);
         for (let j = 0; j < gameWidth; j++) {
+            board[i].push(0);
         }
     }
     dropThreshold = normalDropSpeed[parseInt(fps)][parseInt(difficulty)];
     $("#newRecord").hide();
-    score = getScoreStorage("tetrists-currentscore");
+    setScoreStorage("tetrists-currentscore", 0);
+    score = 0;
     highscore = getScoreStorage("tetrists-highscore");
+    currentTetriminoBag = [];
+    changeTetrimino();
+    gameover = false;
     if (document.getElementById("scoreValue"))
         document.getElementById("scoreValue").innerText = score.toString();
     if (document.getElementById("highScoreValue"))
@@ -132,8 +140,9 @@ function checkGameOver() {
     }
 }
 function endGame() {
-    if (RAF)
+    if (RAF != null)
         cancelAnimationFrame(RAF);
+    gameover = true;
     showMenu("gameOverMenu", () => {
         if (highscoreBeaten) {
             $("#newRecord").show();
@@ -143,7 +152,6 @@ function endGame() {
     });
 }
 function nextLoop() {
-    renderBoard();
     if (++framesDrop > dropThreshold) {
         if (haveCollision(board, currentTetrimino.matrix, currentTetrimino.x, currentTetrimino.y, 0, 1)) {
             SetPiece();
@@ -155,9 +163,14 @@ function nextLoop() {
         }
         framesDrop = 0;
     }
-    RAF = requestAnimationFrame(() => nextLoop());
+    renderBoard();
+    if (!gameover) {
+        RAF = requestAnimationFrame(() => nextLoop());
+    }
 }
 function renderBoard(drawBoard = true) {
+    if (gameCanvas)
+        gameCanvas.clearRect(0, 0, boxWidth, boxHeight);
     for (let i = 0; i < gameHeight + paddingY; i++) {
         for (let j = 0; j < gameWidth; j++) {
             if (board[i][j] === 9 || board[i][j] === 8) {
@@ -422,6 +435,9 @@ function holdPiece() {
 }
 function SetPiece() {
     holdSwapped = false;
+    checkGameOver();
+    if (gameover)
+        return;
     currentTetrimino.matrix.forEach((row, indexColumn) => {
         row.forEach((el, indexRow) => {
             if (el == 1) {
@@ -434,7 +450,6 @@ function SetPiece() {
             }
         });
     });
-    checkGameOver();
     checkLineComplete();
     changeTetrimino();
     resetState();
@@ -611,6 +626,7 @@ function SoftDropPiece(activate) {
 function HardDropPiece() {
     hardDropHeight = shadowTetrimino.y - currentTetrimino.y;
     [currentTetrimino.x, currentTetrimino.y] = [shadowTetrimino.x, shadowTetrimino.y];
+    renderBoard();
 }
 function createShadow(board, tetris_piece) {
     return recursiveFindBottom(board, tetris_piece, 0, 1);
@@ -645,6 +661,8 @@ function haveCollision(board, matrix, currentX, currentY, moveX, moveY) {
     return false;
 }
 document.addEventListener("keyup", (e) => {
+    if (gameover)
+        return;
     switch (e.key) {
         case "ArrowDown":
             SoftDropPiece(false);
@@ -652,6 +670,8 @@ document.addEventListener("keyup", (e) => {
     }
 });
 document.addEventListener("keydown", (e) => {
+    if (gameover)
+        return;
     switch (e.key) {
         case "z":
             break;
@@ -703,12 +723,12 @@ $('div[id^="difficultyButton"]').on("click", function (event) {
 });
 $("#initGame").on("click", function () {
     hideMenu("startMenu", menuDelay, () => {
-        showMenu("gameOverMenu");
+        initGame();
     });
 });
 $("#resetGame").on("click", function () {
     hideMenu("gameOverMenu", menuDelay, () => {
-        showMenu("gameOverMenu");
+        initGame();
     });
 });
 $("#backToMenu").on("click", function () {
