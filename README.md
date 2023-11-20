@@ -9,10 +9,9 @@ A TypeScript Practice utilizing Tetris. Made by me, Bravesa. Not for optimized u
 You can play it here: [LINK](https://danielchenuea.github.io/tetris-ts/)
 
 ## TODOLIST:
- - Infinity System
- - Hard Combo
- - Better Left/Right Drift
  - Sounds(?)
+ - Coments
+ - JsDocs
  - ??
 
 ## Features:
@@ -27,3 +26,6 @@ You can play it here: [LINK](https://danielchenuea.github.io/tetris-ts/)
   - Shadow.
   - Show the Next Piece.
   - Hold and Show Holded.
+  - Infinity System
+  - Hard Combo
+  - Better Left/Right Drift
