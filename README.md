@@ -10,7 +10,7 @@ You can play it here: [LINK](https://danielchenuea.github.io/tetris-ts/)
 
 ## TODOLIST:
  - Sounds(?)
- - Coments
+ - Comments
  - JsDocs
  - ??
 
