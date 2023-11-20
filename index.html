@@ -7,70 +7,83 @@
 </head>
 <body>
     <div class="main">
-        <div class="game">
-            <canvas id="tetrisgame" height="880" width="400" class="tetris">
-    
-            </canvas>
-            <div class="info">
-                <div class="bag">
-                    <canvas id="tetrisnext" height="200" width="200" class="tetrisInfo">
-    
-                    </canvas>
+        <div class="tetrisGame">
+            <div class="game">
+                <canvas id="tetrisgame" height="880" width="400" class="tetris">
+        
+                </canvas>
+                <div class="info">
+                    <div class="bag">
+                        <canvas id="tetrisnext" height="200" width="200" class="tetrisInfo">
+        
+                        </canvas>
+                    </div>
+                    <div class="next">
+                        <canvas id="tetrisbag" height="200" width="200" class="tetrisInfo">
+        
+                        </canvas>
+                    </div>
+                    <div class="score">
+                        <p>Score: </p>
+                        <p id="scoreValue">0</p>
+                    </div>
+                    <div class="score">
+                        <p>High Score: </p>
+                        <p id="highScoreValue">0</p>
+                    </div>
+                    <div class="popupDiv">
+                        <div id="popUpMessage"></div>
+                    </div>
                 </div>
-                <div class="next">
-                    <canvas id="tetrisbag" height="200" width="200" class="tetrisInfo">
-    
-                    </canvas>
+            </div>
+            <div id="startMenu" class="menuModal">
+                <div class="headerTitle">
+                    <h1>TetriS</h1>
+                    <h4>by Bravesa</h4>
                 </div>
-                <div class="score">
-                    <p>Score: </p>
-                    <p id="scoreValue">0</p>
+                <label class="fpsLabel">FPS Selector:</label>
+                <div class="fps">
+                    <div id="fpsButton" value="0" class="fpsOptions">30</div>
+                    <div id="fpsButton" value="1" class="fpsOptions active">60</div>
+                    <div id="fpsButton" value="2" class="fpsOptions">144</div>
                 </div>
-                <div class="score">
-                    <p>High Score: </p>
-                    <p id="highScoreValue">0</p>
+                <label class="difficultyLabel">Fall Speed: </label>
+                <div class="difficulty">
+                    <div id="difficultyButton" value="0" class="difficultyOptions">Easy</div>
+                    <div id="difficultyButton" value="1" class="difficultyOptions active">Normal</div>
+                    <div id="difficultyButton" value="2" class="difficultyOptions">Hard</div>
                 </div>
-                <div class="popupDiv">
-                    <div id="popUpMessage"></div>
+                <div id="initGame" class="gameButton">Start Game</div>
+            </div>
+            <div id="gameOverMenu" class="menuModal" style="display: none;">
+                <div class="headerTitle">
+                    <h1>Game Over</h1>
                 </div>
+                <p id="newRecord" style="display: none;">
+                    New Record!
+                </p>
+                <label class="scoreLabel">Score: </label>
+                <p id="scoreGameOver">
+                    0
+                </p>
+                <label class="highScoreLabel">High Score: </label>
+                <p id="highScoreGameOver">
+                    0
+                </p>
+                <div id="resetGame" class="gameButton">Try Again</div>
+                <div id="backToMenu" class="gameButton">Back to Start</div>
             </div>
         </div>
-        <div id="startMenu" class="menuModal">
-            <div class="headerTitle">
-                <h1>TetriS</h1>
-                <h4>by Bravesa</h4>
-            </div>
-            <label class="fpsLabel">FPS Selector:</label>
-            <div class="fps">
-                <div id="fpsButton" value="0" class="fpsOptions">30</div>
-                <div id="fpsButton" value="1" class="fpsOptions active">60</div>
-                <div id="fpsButton" value="2" class="fpsOptions">144</div>
-            </div>
-            <label class="difficultyLabel">Fall Speed: </label>
-            <div class="difficulty">
-                <div id="difficultyButton" value="0" class="difficultyOptions">Easy</div>
-                <div id="difficultyButton" value="1" class="difficultyOptions active">Normal</div>
-                <div id="difficultyButton" value="2" class="difficultyOptions">Hard</div>
-            </div>
-            <div id="initGame" class="gameButton">Start Game</div>
-        </div>
-        <div id="gameOverMenu" class="menuModal" style="display: none;">
-            <div class="headerTitle">
-                <h1>Game Over</h1>
-            </div>
-            <p id="newRecord" style="display: none;">
-                New Record!
-            </p>
-            <label class="scoreLabel">Score: </label>
-            <p id="scoreGameOver">
-                0
-            </p>
-            <label class="highScoreLabel">High Score: </label>
-            <p id="highScoreGameOver">
-                0
-            </p>
-            <div id="resetGame" class="gameButton">Try Again</div>
-            <div id="backToMenu" class="gameButton">Back to Start</div>
+        <div class="controlinfo">
+            <p>A - Rotate Anti-Clock</p>
+            <p>S - Rotate Clock</p>
+            <p>Z - Rotate 180 AntiClock</p>
+            <p>Up Arrow - Rotate 180 Clock</p>
+            <p>C - Hold Piece</p>
+            <p>Right Arrow - Arrow Left</p>
+            <p>Left Arrow - Move Left</p>
+            <p>Down Arrow - Soft Drop</p>
+            <p>Spacebar - Hard Drop</p>
         </div>
     </div>
     <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>

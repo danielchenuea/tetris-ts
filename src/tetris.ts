@@ -35,18 +35,18 @@ var board: Array<Array<number>> = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-    [0, 0, 0, 1, 1, 1, 1, 0, 0, 0],
-    [1, 0, 0, 0, 1, 1, 1, 0, 0, 0],
-    [1, 1, 0, 1, 1, 1, 1, 0, 0, 0],
-    [1, 1, 1, 1, 1, 1, 1, 0, 0, 0],
-    [1, 1, 1, 1, 1, 1, 1, 0, 0, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+    [0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
 ];
 const canvas = document.getElementById("tetrisgame") as HTMLCanvasElement;
 const canvasNext = document.getElementById("tetrisnext") as HTMLCanvasElement;
@@ -104,8 +104,19 @@ var highscoreBeaten = false;
 var timeoutTransitionPopUpMessage : NodeJS.Timeout;
 var timeoutDisplayPopUpMessage : NodeJS.Timeout;
 
+const rapidFireInterval = 50;
+var intervalLeftArrow : NodeJS.Timeout;
+var intervalRightArrow : NodeJS.Timeout;
+var intervalLeft = false;
+var intervalRight = false;
+
+var colliding = false;
+var infinitySpeed = [15, 30, 72];
+var infinityCounter = 0;
+
 var combo_Number = -1;
-// var hardCombo = false;
+// var hard_combo = false;
+var hardCombo = false;
 var hardDropHeight = 0;
 var softDropHeight = 0;
 var activateSoftDrop = false;
@@ -192,10 +203,17 @@ function endGame(): void{
 function nextLoop(): void {
     // if(gameover && RAF != null) cancelAnimationFrame(RAF)
     // if(gameover) return
+    if(colliding){
+        if(++infinityCounter > infinitySpeed[parseInt(fps)]){
+            SetPiece();
+            colliding = false;
+        }
+    }
 
     if(++framesDrop > dropThreshold){
         if(haveCollision(board, currentTetrimino.matrix, currentTetrimino.x, currentTetrimino.y, 0, 1)){
-            SetPiece();
+
+            colliding = true;
         }else{
             currentTetrimino.y += 1;
             if(activateSoftDrop) softDropHeight++;
@@ -312,7 +330,9 @@ export function rotateMatrixClock(board: number[][], tetris_piece: Tetrimino): v
     }
 
     let rotationOffset = checkIfCanRotate(board, tetris_piece, M, mod(tetris_piece.rotation + 1, 4));
+    // It does rotate
     if (rotationOffset !== null) {
+        infinityCounter = 0;
         tetris_piece.matrix = M;
         tetris_piece.x += rotationOffset.x;
         tetris_piece.y += rotationOffset.y;
@@ -339,7 +359,9 @@ export function rotateMatrixAntiClock(board: number[][], tetris_piece: Tetrimino
     }
 
     let rotationOffset = checkIfCanRotate(board, tetris_piece, M, mod(tetris_piece.rotation - 1, 4));
+    // It does rotate
     if (rotationOffset !== null){
+        infinityCounter = 0;
         tetris_piece.matrix = M;
         tetris_piece.x += rotationOffset.x;
         tetris_piece.y += rotationOffset.y;
@@ -543,6 +565,9 @@ function holdPiece(): void{
 
 function SetPiece(): void{
     holdSwapped = false; // reset Hold
+    clearInterval(intervalLeftArrow);
+    clearInterval(intervalRightArrow);
+
     checkGameOver();
     if(gameover) return;
 
@@ -592,18 +617,20 @@ function checkLineComplete(){
         }
         return false;
     })
-
-    scoreHandler(currentPiece_YPosition.length);
     
     // There is completed lines
     currentPiece_YPosition.forEach((el, index) => {
         setTimeout(() => {
-            shiftDown(el, 1);
+            shiftBoardDown(el, 1);
             renderBoard();
         }, 70 * (index)) // Time delay
     })
+    setTimeout(() => {
+        scoreHandler(currentPiece_YPosition.length, checkPerfectClear());
+    }, 70 * currentPiece_YPosition.length   )
+
 }
-function shiftDown(yPos: number, numShift: number){
+function shiftBoardDown(yPos: number, numShift: number){
     let aboveShift = (JSON.parse(JSON.stringify(board)) as number[][]).slice(0, yPos);
     aboveShift.forEach((rowEl, columnIndex) => {
         rowEl.forEach((el, rowIndex) => {
@@ -612,7 +639,7 @@ function shiftDown(yPos: number, numShift: number){
     })
 }
 
-function scoreHandler(clearLinesNumber: number = 0): void{
+function scoreHandler(clearLinesNumber: number = 0, isTherePerfectClear : boolean): void{
     if(clearLinesNumber === 0){ // Combo Break;
         if(combo_Number > 0){
             let comboValue = combo_score.slice(0, combo_Number + 1)
@@ -623,67 +650,105 @@ function scoreHandler(clearLinesNumber: number = 0): void{
             else increaseScoreHandler(sumCombo * 50);
         }
         combo_Number = -1;
+        hardCombo = false;
     } else {
         combo_Number += 1;
     }
 
     if( tspin === false && mini_tspin === false ){
-        increaseScoreHandler(normal_score[clearLinesNumber])
+        let temp_score = normal_score[clearLinesNumber];
         switch(clearLinesNumber){
             case 1:
-                popMessage("Single", 1)
+                popMessage("Single", 1);
+                hardCombo = false;
                 break;
             case 2:
-                popMessage("Double", 2)
+                popMessage("Double", 2);
+                hardCombo = false;
                 break;
             case 3:
-                popMessage("Triple", 3)
+                popMessage("Triple", 3);
+                hardCombo = false;
                 break;
             case 4:
-                popMessage("Tetris!", 4) // Difficult Clear
+                popMessage(`Tetris! ${hardCombo ? "\nHard Combo!" : ""}`, 4); // Difficult Clear
+                if(hardCombo) temp_score = Math.ceil(temp_score * 1.5);
+                hardCombo = true;
                 break;
             default:
+                hardCombo = false;
                 break;
         }
+        increaseScoreHandler(temp_score)
     }else{
         if( tspin ){
-            increaseScoreHandler(tspin_score[clearLinesNumber])
+            let temp_score = tspin_score[clearLinesNumber]
             switch(clearLinesNumber){
-                case 0:
+                case 0: // T-spin no lines don't break combos
                     popMessage("T-Spin!", 3)
+                    hardCombo = true;
                     break;
                 case 1:
-                    popMessage("Single T-Spin!", 4) // Difficult Clear
+                    popMessage(`Single T-Spin! ${hardCombo ? "\nHard Combo!" : ""}`, 4) // Difficult Clear
+                    if(hardCombo) temp_score = Math.ceil(temp_score * 1.5);
+                    hardCombo = true;
                     break;
                 case 2:
-                    popMessage("Double T-Spin!", 4) // Difficult Clear
+                    popMessage(`Double T-Spin! ${hardCombo ? "\nHard Combo!" : ""}`, 4) // Difficult Clear
+                    if(hardCombo) temp_score = Math.ceil(temp_score * 1.5);
+                    hardCombo = true;
                     break;
                 case 3:
-                    popMessage("Triple T-Spin!", 4) // Difficult Clear
+                    popMessage(`Triple T-Spin! ${hardCombo ? "\nHard Combo!" : ""}`, 4) // Difficult Clear
+                    if(hardCombo) temp_score = Math.ceil(temp_score * 1.5);
+                    hardCombo = true;
                     break;
                 default:
+                    hardCombo = false;
                     break;
             }
+            increaseScoreHandler(temp_score)
         }
         if ( mini_tspin ){
-            increaseScoreHandler(mini_tspin_score[clearLinesNumber])
+            let temp_score = mini_tspin_score[clearLinesNumber]
             switch(clearLinesNumber){
                 case 0:
                     popMessage("Mini T-Spin!", 2)
+                    hardCombo = false;
                     break;
                 case 1:
-                    popMessage("Single Mini T-Spin!", 4) // Difficult Clear
+                    popMessage(`Single Mini T-Spin! ${hardCombo ? "\nHard Combo!" : ""}`, 4) // Difficult Clear
+                    if(hardCombo) temp_score = Math.ceil(temp_score * 1.5);
+                    hardCombo = true;
                     break;
                 case 2:
-                    popMessage("Double Mini T-Spin!", 4) // Difficult Clear
+                    popMessage(`Double Mini T-Spin! ${hardCombo ? "\nHard Combo!" : ""}`, 4) // Difficult Clear
+                    if(hardCombo) temp_score = Math.ceil(temp_score * 1.5);
+                    hardCombo = true;
                     break;
                 case 3:
-                    popMessage("Triple Mini T-Spin!", 4) // Difficult Clear also impossible
+                    popMessage(`Triple Mini T-Spin! ${hardCombo ? "\nHard Combo!" : ""}`, 4) // Difficult Clear also impossible
+                    if(hardCombo) temp_score = Math.ceil(temp_score * 1.5);
+                    hardCombo = true;
                     break;
                 default:
+                    hardCombo = false;
                     break;
             }
+            increaseScoreHandler(temp_score)
         }
+    } 
+    if(isTherePerfectClear && clearLinesNumber > 0){
+        let message = `${hardCombo && clearLinesNumber === 4 ? "Hard " : ""}`;
+        let messageDictionary : {[key : number] : string} = {
+            1: "Single!",
+            2: "Double!",
+            3: "Triple!",
+            4: "Tetris!"
+        }
+        message += messageDictionary[clearLinesNumber];
+        popMessage(message + "\nPerfect Clear!", 4)
+        increaseScoreHandler(perfect_clear_score[clearLinesNumber])
     }
 
     // HardDrop Score
@@ -696,9 +761,10 @@ function scoreHandler(clearLinesNumber: number = 0): void{
         softDropHeight = 0;
     }
 }
-const normal_score = [0, 100, 300, 500, 800]
-const mini_tspin_score = [100, 200, 400, 800, 0]
-const tspin_score = [400, 800, 1200, 1600, 0]
+const normal_score = [0, 100, 300, 500, 800]                // No Line, Single, Double, Triple, Tetris
+const mini_tspin_score = [100, 200, 400, 800, 0]            // Mini Spin 0 Line, 1 Line, 2 Lines, 3 Lines.
+const tspin_score = [400, 800, 1200, 1600, 0]               // Spin 0 Line, 1 Line, 2 Lines, 3 Lines
+const perfect_clear_score = [0, 800, 1200, 1800, 2000, 3200]   // No Line, Single, Double, Triple, Tetris, Hard Combo
 const combo_score = [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 5] // * 50
 
 function increaseScoreHandler(pointIncrease: number): void{
@@ -714,6 +780,15 @@ function increaseScoreHandler(pointIncrease: number): void{
         highscoreBeaten = true;
         setScoreStorage("tetrists-highscore", newScore);
     }
+}
+
+function checkPerfectClear(){
+    let lastLine = board[board.length - 1]
+    console.log(lastLine)
+    if(lastLine.every(el => el === 0 || el === 8 || el === 9)){
+        return true;
+    }
+    return false;
 }
 
 function popMessage(message: string, levelMessage: number){
@@ -803,7 +878,17 @@ document.addEventListener("keyup", (e: KeyboardEvent) => {
     if(gameover) return;
     switch (e.key) {
         case "ArrowDown":
-            SoftDropPiece(false)
+            SoftDropPiece(false);
+            break;
+        case "ArrowLeft":
+            clearInterval(intervalLeftArrow);
+            intervalLeft = false;
+            break;  
+        case "ArrowRight":
+            clearInterval(intervalRightArrow);
+            intervalRight = false;
+            break;
+        default:
             break;
     }
 })
@@ -811,6 +896,9 @@ document.addEventListener("keyup", (e: KeyboardEvent) => {
 document.addEventListener("keydown", (e: KeyboardEvent) => {
     if(gameover) return;
     switch (e.key) {
+        // case "d":
+        //     changeTetrimino()
+        //     break;
         case " ":
             HardDropPiece();
             SetPiece();
@@ -825,7 +913,7 @@ document.addEventListener("keydown", (e: KeyboardEvent) => {
             rotateMatrixClock(board, currentTetrimino);
             rotateMatrixClock(board, currentTetrimino);
             break;
-        case "Z":
+        case "z":
             rotateMatrixAntiClock(board, currentTetrimino);
             rotateMatrixAntiClock(board, currentTetrimino);
             break;
@@ -833,10 +921,20 @@ document.addEventListener("keydown", (e: KeyboardEvent) => {
             holdPiece();
             break;
         case "ArrowLeft":
-            movePiece(board, currentTetrimino, "left");
-            break;
+            if(!intervalLeft){
+                intervalLeft = true;
+                intervalLeftArrow = setInterval(() => {
+                    movePiece(board, currentTetrimino, "left");
+                }, rapidFireInterval);
+            }
+        break;
         case "ArrowRight":
-            movePiece(board, currentTetrimino, "right");
+            if(!intervalRight){
+                intervalRight = true;
+                intervalRightArrow = setInterval(() => {
+                    movePiece(board, currentTetrimino, "right");
+                }, rapidFireInterval);
+            }
             break;
         case "ArrowDown":
             SoftDropPiece(true);
