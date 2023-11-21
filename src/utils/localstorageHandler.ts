@@ -1,4 +1,11 @@
 
+
+/**
+ * Get the Score Number from the Local Storage.
+ * If it does not exist. Just creates it.
+ * @param {string} storageString
+ * @returns {number}
+ */
 export function getScoreStorage(storageString: string) : number{
     let temp_score = localStorage.getItem(storageString);
     if(temp_score !== null){
@@ -14,6 +21,12 @@ export function getScoreStorage(storageString: string) : number{
     }
 }
 
+/**
+ * Store the score number in the LocalStorage.
+ * @param {string} storageString
+ * @param {number} score
+ * @returns {void}
+ */
 export function setScoreStorage(storageString: string, score: number) : void{
     localStorage.setItem(storageString, score.toString());
 }

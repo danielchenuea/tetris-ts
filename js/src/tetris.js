@@ -51,18 +51,18 @@ const canvasBag = document.getElementById("tetrisbag");
 const gameCanvas = canvas != null ? canvas.getContext("2d") : null;
 const nextCanvas = canvasBag != null ? canvasNext.getContext("2d") : null;
 const bagCanvas = canvasBag != null ? canvasBag.getContext("2d") : null;
-const boxHeight = 880;
 const boxWidth = 400;
-const bagHeight = 200;
+const boxHeight = 880;
 const bagWidth = 200;
-const gameHeight = 22;
+const bagHeight = 200;
+const blockWidth = 40;
+const blockHeight = 40;
 const gameWidth = 10;
+const gameHeight = 22;
 const paddingY = 18;
 const initialX = 4;
 const initialY = 19;
 const gameOverLine = 19;
-const blockHeight = 40;
-const blockWidth = 40;
 const menuDelay = 200;
 const defaultTetriminoBag = ["I", "J", "L", "O", "S", "Z", "T"];
 var currentTetriminoBag = [];
@@ -84,9 +84,6 @@ var shadowTetrimino = {
 };
 var holdTetrimino = null;
 var holdSwapped = false;
-var score = 0;
-var highscore = 0;
-var highscoreBeaten = false;
 var timeoutTransitionPopUpMessage;
 var timeoutDisplayPopUpMessage;
 const rapidFireInterval = 50;
@@ -97,11 +94,19 @@ var intervalRight = false;
 var colliding = false;
 var infinitySpeed = [15, 30, 72];
 var infinityCounter = 0;
+var score = 0;
+var highscore = 0;
+var highscoreBeaten = false;
 var combo_Number = -1;
 var hardCombo = false;
 var hardDropHeight = 0;
 var softDropHeight = 0;
 var activateSoftDrop = false;
+const normal_score = [0, 100, 300, 500, 800];
+const mini_tspin_score = [100, 200, 400, 800, 0];
+const tspin_score = [400, 800, 1200, 1600, 0];
+const perfect_clear_score = [0, 800, 1200, 1800, 2000, 3200];
+const combo_score = [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 5];
 var tspin = false;
 var mini_tspin = false;
 var RAF = null;
@@ -117,9 +122,9 @@ var fastDropSpeed = [
     [35, 25, 15],
     [84, 60, 36],
 ];
-var gameover = true;
 var fps = "1";
 var difficulty = "1";
+var gameover = true;
 export function initGame() {
     board = [];
     for (let i = 0; i < gameHeight + paddingY; i++) {
@@ -133,13 +138,13 @@ export function initGame() {
     setScoreStorage("tetrists-currentscore", 0);
     score = 0;
     highscore = getScoreStorage("tetrists-highscore");
-    currentTetriminoBag = [];
-    changeTetrimino();
-    gameover = false;
     if (document.getElementById("scoreValue"))
         document.getElementById("scoreValue").innerText = score.toString();
     if (document.getElementById("highScoreValue"))
         document.getElementById("highScoreValue").innerText = highscore.toString();
+    currentTetriminoBag = [];
+    changeTetrimino();
+    gameover = false;
     nextLoop();
 }
 function checkGameOver() {
@@ -366,11 +371,9 @@ function checkTSpin(board, tetris_piece, movement) {
     let backPosition = [matrix[back[0].y][back[0].x], matrix[back[1].y][back[1].x]];
     if (frontPosition.every(el => el !== 0) && backPosition.some(el => el !== 0)) {
         tspin = true;
-        console.log("tspin!");
     }
     else if (frontPosition.some(el => el !== 0) && backPosition.every(el => el !== 0)) {
         mini_tspin = true;
-        console.log("mini_tspin!");
     }
     let [xMov, yMov] = [Math.abs(movement.x), Math.abs(movement.y)];
     if ((xMov === 1 && yMov === 2) || (xMov === 2 && yMov === 1)) {
@@ -415,16 +418,16 @@ function getTetriminoFromBag() {
     }
     return temp_tetrisPiece;
 }
-function drawTetriminoCanvasInfo(canvas, nextTetrimino) {
+function drawTetriminoCanvasInfo(canvas, tetrimino) {
     canvas.clearRect(0, 0, 200, 200);
-    let xOffset = (bagWidth - (nextTetrimino.matrix.length * blockWidth)) / 2;
-    let yOffset = (bagHeight - (nextTetrimino.matrix.length * blockHeight)) / 2;
-    nextTetrimino.matrix.forEach((row, indexColumn) => {
+    let xOffset = (bagWidth - (tetrimino.matrix.length * blockWidth)) / 2;
+    let yOffset = (bagHeight - (tetrimino.matrix.length * blockHeight)) / 2;
+    tetrimino.matrix.forEach((row, indexColumn) => {
         row.forEach((el, indexRow) => {
             if (el == 1) {
                 let yPos = indexColumn;
                 let xPos = indexRow;
-                canvas.fillStyle = nextTetrimino.colorMatrix;
+                canvas.fillStyle = tetrimino.colorMatrix;
                 canvas.fillRect(xOffset + (xPos * blockWidth), yOffset + (yPos * blockHeight), blockWidth - 1, blockHeight - 1);
             }
         });
@@ -471,9 +474,9 @@ function SetPiece() {
     });
     checkLineComplete();
     changeTetrimino();
-    resetState();
+    resetStateTSpin();
 }
-function resetState() {
+function resetStateTSpin() {
     tspin = false;
     mini_tspin = false;
 }
@@ -514,6 +517,14 @@ function shiftBoardDown(yPos, numShift) {
             board[columnIndex + numShift][rowIndex] = el;
         });
     });
+}
+function checkPerfectClear() {
+    let lastLine = board[board.length - 1];
+    console.log(lastLine);
+    if (lastLine.every(el => el === 0 || el === 8 || el === 9)) {
+        return true;
+    }
+    return false;
 }
 function scoreHandler(clearLinesNumber = 0, isTherePerfectClear) {
     if (clearLinesNumber === 0) {
@@ -645,11 +656,6 @@ function scoreHandler(clearLinesNumber = 0, isTherePerfectClear) {
         softDropHeight = 0;
     }
 }
-const normal_score = [0, 100, 300, 500, 800];
-const mini_tspin_score = [100, 200, 400, 800, 0];
-const tspin_score = [400, 800, 1200, 1600, 0];
-const perfect_clear_score = [0, 800, 1200, 1800, 2000, 3200];
-const combo_score = [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 5];
 function increaseScoreHandler(pointIncrease) {
     const newScore = score + pointIncrease;
     transitionTwoNumbers("scoreValue", score, newScore);
@@ -661,14 +667,6 @@ function increaseScoreHandler(pointIncrease) {
         highscoreBeaten = true;
         setScoreStorage("tetrists-highscore", newScore);
     }
-}
-function checkPerfectClear() {
-    let lastLine = board[board.length - 1];
-    console.log(lastLine);
-    if (lastLine.every(el => el === 0 || el === 8 || el === 9)) {
-        return true;
-    }
-    return false;
 }
 function popMessage(message, levelMessage) {
     const popMessage = document.getElementById("popUpMessage");
@@ -702,6 +700,7 @@ function HardDropPiece() {
     hardDropHeight = shadowTetrimino.y - currentTetrimino.y;
     [currentTetrimino.x, currentTetrimino.y] = [shadowTetrimino.x, shadowTetrimino.y];
     renderBoard();
+    SetPiece();
 }
 function createShadow(board, tetris_piece) {
     return recursiveFindBottom(board, tetris_piece, 0, 1);
@@ -760,7 +759,6 @@ document.addEventListener("keydown", (e) => {
     switch (e.key) {
         case " ":
             HardDropPiece();
-            SetPiece();
             break;
         case "a":
             rotateMatrixAntiClock(board, currentTetrimino);

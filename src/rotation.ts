@@ -2,7 +2,7 @@
 
 // https://tetris.wiki/Super_Rotation_System
 // On convention, X rightwards is positive, Y upwards is positive.
-// Inverting (multypling -1) is a must on Y;
+// Inverting (multiplying -1) is a must on Y;
 export const wallkicks_JLSTZ = [
     [[ 0, 0], [-1, 0], [-1,+1], [ 0,-2], [-1,-2]],  // 0 -> R
     [[ 0, 0], [+1, 0], [+1,-1],	[ 0,+2], [+1,+2]],  // R -> 0
@@ -29,6 +29,11 @@ export const wallkicks_I = [
 // R -> 1
 // 2 -> 2
 // L -> 3
+// Key: 
+// - First letter, the current rotation;
+// - Second letter, the next rotation;
+// Returns:
+// - Which Wallkick will be used.
 export const wallkickDictionary: { [key: string]: number } = {
     "01": 0,
     "10": 1,
